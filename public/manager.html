@@ -116,7 +116,7 @@
       </button>
     </div>
 
-    <!-- ANALYTICS (uses same military APIs) -->
+    <!-- ANALYTICS -->
     <div id="analyticsSection" class="hidden space-y-6">
       <section id="dashboard" class="bg-white rounded-xl p-4 md:p-6 shadow-xl border border-gray-200 text-gray-900">
         <div class="flex flex-wrap-row justify-between items-center gap-3 mb-4">
@@ -347,7 +347,7 @@
             ` : `
               <button class="card-btn px-3 py-1 text-xs bg-red-600 rounded-full" onclick="deleteOrder('${o._id}')">Delete</button>
             `}
-            <button class="card-btn px-3 py-1 text-xs bg-slate-900 text-yellow-100 rounded-full" onclick="printSlip('${o._id}')">Print Slip</button>
+            <button class="card-btn px-3 py-1 text-xs bg-slate-900 text-yellow-100 rounded-full" onclick="printSlip('${o._id}')">Bluetooth Print</button>
           </div>
         </div>
       `;
@@ -418,9 +418,13 @@
         alert('Order not found');
         return;
       }
-      const receiptText = buildReceipt(order);
-      console.log('PRINT RECEIPT:\n'+receiptText);
-      alert('Receipt text logged to console. Integrate with Bluetooth printer plugin (RawBT etc.) on device.');
+      const receipt = buildReceipt(order);
+      try {
+        const uri = 'rawbt:' + encodeURIComponent(receipt);  /* RawBT integration */  /* [web:134][web:219][web:220] */
+        window.location.href = uri;
+      } catch (e) {
+        alert('Bluetooth print failed: ' + (e.message || e));
+      }
     }
 
     const dashboardPeriod = document.getElementById('dashboardPeriod');
