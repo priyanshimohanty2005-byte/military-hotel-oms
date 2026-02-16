@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Military Hotel — Digital Menu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0b0b0b;
+  --paper:#1e1e1e;
+  --gold:#d4af37;
+  --text:#f5f5f5;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Poppins,sans-serif;
+  overflow:hidden;
+}
+
+/* BOOK */
+#viewport{width:100vw;height:100vh;overflow:hidden}
+#book{display:flex;height:100%;transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.page{
+  min-width:100vw;
+  height:100vh;
+  padding:18px 14px 130px;
+  background:
+    radial-gradient(circle at center, rgba(212,175,55,.05), transparent 60%),
+    linear-gradient(160deg,#111,#1f1f1f);
+  position:relative;
+}
+.page::before{
+  content:"MILITARY HOTEL";
+  position:absolute;inset:0;
+  display:flex;justify-content:center;align-items:center;
+  font-family:"Playfair Display",serif;
+  font-size:3.2rem;
+  color:rgba(255,255,255,.04);
+  pointer-events:none;
+}
+
+/* HEADINGS */
+h1,h2{
+  font-family:"Playfair Display",serif;
+  color:var(--gold);
+  margin-bottom:10px;
+}
+h1{font-size:2.4rem}
+h2{font-size:1.4rem}
+
+.center{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+
+/* NAV ARROWS */
+.nav{
+  position:fixed;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:26px;
+  color:var(--gold);
+  cursor:pointer;
+  z-index:20;
+  opacity:.75;
+}
+.nav:hover{opacity:1}
+#prev{left:6px}
+#next{right:6px}
+
+/* PAGE NO */
+.pageNo{
+  position:absolute;
+  bottom:14px;
+  right:16px;
+  font-size:.7rem;
+  color:#aaa;
+}
+
+/* CONTENTS */
+#contentsBtn{
+  position:fixed;
+  top:12px;
+  right:12px;
+  background:#2a2a2a;
+  color:var(--gold);
+  padding:8px 16px;
+  border-radius:20px;
+  font-size:.9rem;
+  z-index:30;
+}
+.contents-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+  max-width:440px;
+}
+.contents-card{
+  background:#2a2a2a;
+  padding:16px;
+  border-radius:16px;
+  font-weight:600;
+  text-align:center;
+  cursor:pointer;
+}
+
+/* ITEMS */
+.items-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+@media(min-width:600px){
+  .items-grid{grid-template-columns:repeat(3,1fr)}
+}
+.item{
+  background:#2a2a2a;
+  border-radius:14px;
+  padding:10px;
+  font-size:.8rem;
+}
+.item b{display:block;font-size:.9rem;margin-bottom:4px}
+.price{font-size:.75rem;color:var(--gold);margin-bottom:6px}
+select{
+  width:100%;
+  padding:7px;
+  border-radius:8px;
+  border:none;
+  font-size:.75rem;
+  margin-bottom:6px;
+}
+.add{
+  width:100%;
+  padding:7px;
+  border-radius:18px;
+  border:none;
+  background:linear-gradient(90deg,#d4af37,#f2d57c);
+  font-weight:600;
+  font-size:.78rem;
+}
+
+/* FOOTER CART BAR */
+#cartBar{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:#111;
+  border-top:2px solid var(--gold);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 14px;
+  z-index:40;
+}
+#cartSummary{font-weight:600}
+#checkoutBtn{
+  background:var(--gold);
+  color:#000;
+  padding:10px 18px;
+  border-radius:22px;
+  font-weight:700;
+  border:none;
+}
+
+/* CART MODAL */
+#cartModal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;
+  z-index:50;
+}
+#cartBox{
+  background:#1f1f1f;
+  width:92%;
+  max-width:460px;
+  max-height:88vh;
+  margin:30px auto;
+  padding:18px;
+  border-radius:18px;
+  display:flex;
+  flex-direction:column;
+}
+#cartItems{flex:1;overflow:auto;margin-bottom:10px}
+.cart-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:8px;font-size:.85rem;
+}
+.cart-row small{color:#ccc}
+.qty button{
+  background:#333;color:#fff;border:none;
+  padding:4px 8px;border-radius:6px;margin:0 4px;
+}
+
+/* INPUTS */
+input,select#orderType{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  margin-bottom:8px;
+  font-size:.9rem;
+}
+.primary{
+  background:linear-gradient(90deg,#d4af37,#f2d57c);
+  border:none;padding:12px;border-radius:26px;
+  font-weight:700;width:100%;
+}
+
+/* TOAST */
+#toast{
+  position:fixed;
+  bottom:90px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#222;
+  color:var(--gold);
+  padding:10px 18px;
+  border-radius:20px;
+  font-size:.8rem;
+  display:none;
+  z-index:60;
+}
+
+/* SWIPE HINT */
+#hint{
+  position:fixed;
+  bottom:120px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,.7);
+  color:#fff;
+  padding:8px 14px;
+  border-radius:18px;
+  font-size:.75rem;
+  z-index:70;
+}
+
+/* POST-ORDER MODAL */
+#postOrderModal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.8);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:80;
+}
+#postOrderBox{
+  background:#1f1f1f;
+  padding:18px;
+  border-radius:18px;
+  width:90%;
+  max-width:420px;
+  text-align:center;
+}
+#postOrderBox h3{
+  margin-top:0;
+  color:var(--gold);
+}
+.post-note{
+  font-size:.85rem;
+  color:#ddd;
+}
+.post-small{
+  font-size:.75rem;
+  color:#aaa;
+}
+#billLine{
+  font-size:.9rem;
+  margin:8px 0;
+}
+.post-btn{
+  margin-top:8px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="viewport"><div id="book"></div></div>
+
+<div id="prev" class="nav">❮</div>
+<div id="next" class="nav">❯</div>
+<button id="contentsBtn" onclick="go(1)">📑 Menu</button>
+
+<div id="cartBar">
+  <div id="cartSummary">🛒 0 items | ₹0</div>
+  <button id="checkoutBtn">View Cart</button>
+</div>
+
+<div id="cartModal">
+  <div id="cartBox">
+    <h3>Your Order</h3>
+    <div id="cartItems"></div>
+    <b>Total: ₹<span id="total">0</span></b>
+
+    <select id="orderType">
+      <option value="">Select Order Type</option>
+      <option value="dinein">Dine In</option>
+      <option value="takeaway">Takeaway</option>
+      <option value="delivery">Delivery</option>
+    </select>
+
+    <input id="regno" placeholder="Registration Number">
+    <input id="name" placeholder="Customer Name">
+    <input id="mobile" placeholder="Mobile Number">
+    <input id="table" placeholder="Table Number" style="display:none">
+    <input id="address" placeholder="Address" style="display:none">
+
+    <button class="primary" id="placeOrderBtn">Place Order</button>
+    <button onclick="closeCart()">Close</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="hint">Swipe or use arrows to browse menu</div>
+
+<!-- POST-ORDER PAYMENT MODAL -->
+<div id="postOrderModal">
+  <div id="postOrderBox">
+    <h3>Order placed successfully</h3>
+    <p class="post-note">
+      Please complete payment at the counter to receive your order.
+    </p>
+    <p id="billLine"></p>
+
+    <div style="margin:10px 0;font-weight:600;">Select payment method</div>
+    <button id="payCashBtn" class="primary post-btn">Pay with Cash at Counter</button>
+    <button id="payQRBtn" class="primary post-btn">Pay via QR (UPI)</button>
+
+    <div id="cashSection" style="display:none;margin-top:14px;">
+      <p class="post-note">
+        Please go to the counter and pay the above amount.<br>
+        Payment confirmation needs to be done at the counter to receive your order.
+      </p>
+      <button id="cashDoneBtn" class="primary post-btn">Done</button>
+    </div>
+
+    <div id="qrSection" style="display:none;margin-top:14px;">
+      <p class="post-note">
+        Scan this QR to pay the exact bill amount via UPI.
+      </p>
+      <div id="qrBox" style="background:#000;padding:10px;border-radius:12px;display:inline-block;"></div>
+      <p class="post-small">
+        After payment, please confirm at the counter to receive your order.
+      </p>
+      <button id="qrDoneBtn" class="primary post-btn">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+setTimeout(()=>document.getElementById("hint").style.display="none",5000);
+
+const book=document.getElementById("book");
+const cartSummary=document.getElementById("cartSummary");
+const cartModal=document.getElementById("cartModal");
+const cartItemsDiv=document.getElementById("cartItems");
+const totalSpan=document.getElementById("total");
+const checkoutBtn=document.getElementById("checkoutBtn");
+const placeOrderBtn=document.getElementById("placeOrderBtn");
+
+const regInput=document.getElementById("regno");
+const nameInput=document.getElementById("name");
+const mobileInput=document.getElementById("mobile");
+const tableInput=document.getElementById("table");
+const addressInput=document.getElementById("address");
+const orderType=document.getElementById("orderType");
+
+const postOrderModal=document.getElementById("postOrderModal");
+const billLine=document.getElementById("billLine");
+const payCashBtn=document.getElementById("payCashBtn");
+const payQRBtn=document.getElementById("payQRBtn");
+const cashSection=document.getElementById("cashSection");
+const qrSection=document.getElementById("qrSection");
+const cashDoneBtn=document.getElementById("cashDoneBtn");
+const qrDoneBtn=document.getElementById("qrDoneBtn");
+const qrBox=document.getElementById("qrBox");
+
+let cart=[],page=0,locked=false,menu={};
+const ITEMS_PER_PAGE=window.innerWidth<500?6:8;
+
+/* NAV */
+function go(i){
+  locked=true;page=i;
+  book.style.transform=`translateX(-${i*100}vw)`;
+  setTimeout(()=>locked=false,600);
+}
+document.getElementById("prev").onclick=()=>page>0&&go(page-1);
+document.getElementById("next").onclick=()=>page<book.children.length-1&&go(page+1);
+
+/* SWIPE */
+let sx=0;
+document.addEventListener("touchstart",e=>sx=e.touches[0].clientX);
+document.addEventListener("touchend",e=>{
+  if(locked)return;
+  let dx=e.changedTouches[0].clientX-sx;
+  if(dx>80)document.getElementById("prev").onclick();
+  if(dx<-80)document.getElementById("next").onclick();
+});
+
+/* CART OPEN */
+checkoutBtn.onclick=()=>cartModal.style.display="block";
+function closeCart(){cartModal.style.display="none"}
+
+orderType.onchange=()=>{
+  tableInput.style.display   = orderType.value==="dinein" ? "block" : "none";
+  addressInput.style.display = (orderType.value==="takeaway" || orderType.value==="delivery") ? "block" : "none";
+};
+
+/* TOAST */
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.innerText=msg;
+  t.style.display="block";
+  setTimeout(()=>t.style.display="none",1400);
+}
+
+/* MENU */
+fetch("/menu.json").then(r=>r.json()).then(m=>{menu=m;build();});
+
+function build(){
+  book.innerHTML+=`
+  <section class="page center">
+    <h1>Military Hotel</h1>
+    <p>Delicious Meals & Biryani</p>
+    <p>📞 +91-XXXXXXXXXX</p>
+    <button class="primary" onclick="go(1)">Open Menu</button>
+  </section>`;
+
+  let contents="",start=2;
+  Object.keys(menu).forEach(c=>{
+    contents+=`<div class="contents-card" onclick="go(${start})">${c}</div>`;
+    start+=Math.ceil(menu[c].length/ITEMS_PER_PAGE);
+  });
+
+  book.innerHTML+=`
+  <section class="page center">
+    <h2>Menu</h2>
+    <div class="contents-grid">${contents}</div>
+    <div class="pageNo">2</div>
+  </section>`;
+
+  let pg=3;
+  for(let [cat,items] of Object.entries(menu)){
+    for(let i=0;i<items.length;i+=ITEMS_PER_PAGE){
+      let slice=items.slice(i,i+ITEMS_PER_PAGE);
+      let html=`<h2>${i===0?cat:cat+" (Continued)"}</h2><div class="items-grid">`;
+      slice.forEach(it=>{
+        const min=Math.min(...Object.values(it.variants));
+        let opts=`<option value="">Choose option</option>`+
+          Object.entries(it.variants).map(v=>`<option value="${v[1]}">${v[0]} — ₹${v[1]}</option>`).join("");
+        html+=`
+        <div class="item">
+          <b>${it.name}</b>
+          <div class="price">From ₹${min}</div>
+          <select>${opts}</select>
+          <button class="add" onclick="add('${it.name}',this)">Add</button>
+        </div>`;
+      });
+      html+=`</div>`;
+      book.innerHTML+=`<section class="page">${html}<div class="pageNo">${pg++}</div></section>`;
+    }
+  }
+}
+
+/* CART LOGIC */
+function add(name,btn){
+  const sel=btn.previousElementSibling;
+  if(!sel.value){alert("Please choose an option");return;}
+  const price=+sel.value;
+  const variant=sel.options[sel.selectedIndex].text.split(" — ")[0];
+
+  let f=cart.find(i=>i.name===name&&i.price===price&&i.variant===variant);
+  if(f)f.qty++;
+  else cart.push({name,variant,price,qty:1});
+
+  toast(`${name} (${variant}) added`);
+  updateCart();
+}
+
+function updateCart(){
+  cartItemsDiv.innerHTML="";
+  let total=0;
+  cart.forEach((i,idx)=>{
+    total+=i.qty*i.price;
+    cartItemsDiv.innerHTML+=`
+    <div class="cart-row">
+      <div>
+        ${i.name} <small>(${i.variant})</small><br>
+        ₹${i.price}
+      </div>
+      <div class="qty">
+        <button onclick="chg(${idx},-1)">−</button>
+        ${i.qty}
+        <button onclick="chg(${idx},1)">+</button>
+      </div>
+    </div>`;
+  });
+  totalSpan.innerText=total;
+  cartSummary.innerText=`🛒 ${cart.reduce((s,i)=>s+i.qty,0)} items | ₹${total}`;
+}
+function chg(i,d){
+  cart[i].qty+=d;
+  if(cart[i].qty<=0)cart.splice(i,1);
+  updateCart();
+}
+
+/* POST-ORDER FLOW */
+let lastOrderId=null;
+let lastOrderTotal=0;
+
+function openPostOrderFlow(orderId,total){
+  lastOrderId=orderId;
+  lastOrderTotal=total;
+  billLine.innerText=`Bill Amount: ₹${total}`;
+  cashSection.style.display="none";
+  qrSection.style.display="none";
+  qrBox.innerHTML="";
+  postOrderModal.style.display="flex";
+}
+
+function resetToMenu(){
+  postOrderModal.style.display="none";
+  cart=[];
+  updateCart();
+  closeCart();
+  go(0);
+}
+
+payCashBtn.onclick=()=>{
+  cashSection.style.display="block";
+  qrSection.style.display="none";
+};
+
+payQRBtn.onclick=()=>{
+  cashSection.style.display="none";
+  qrSection.style.display="block";
+
+  const upiId="YOUR_UPI_ID@bank"; // TODO: set Military Hotel UPI
+  const upiName="Military Hotel";
+  const note = lastOrderId ? `Order ${lastOrderId}` : "Military Hotel Order";
+  const amount = lastOrderTotal || 0;
+
+  const upiUrl=`upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+  const qrApi=`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl)}`;
+  qrBox.innerHTML=`<img src="${qrApi}" alt="UPI QR" style="width:220px;height:220px;">`;
+};
+
+qrDoneBtn.onclick=resetToMenu;
+cashDoneBtn.onclick=resetToMenu;
+
+/* CHECKOUT */
+let submitting=false;
+placeOrderBtn.onclick=()=>{
+  if(submitting)return;
+  if(cart.length===0)return alert("Cart empty");
+  if(!regInput.value.trim())return alert("Enter registration number");
+  if(!nameInput.value.trim())return alert("Enter name");
+  if(!mobileInput.value.trim())return alert("Enter mobile");
+  if(!orderType.value)return alert("Select order type");
+  if(orderType.value==="dinein"&&!tableInput.value.trim())return alert("Enter table number");
+  if((orderType.value==="takeaway" || orderType.value==="delivery") && !addressInput.value.trim())
+    return alert("Enter address");
+
+  const totalAmount = cart.reduce((s,i)=>s + i.qty*i.price,0);
+
+  submitting=true;
+  placeOrderBtn.innerText="Placing order…";
+
+  fetch("/api/orders",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      orderType:orderType.value,
+      customerName:nameInput.value.trim(),
+      registrationNumber:regInput.value.trim(),
+      mobile:mobileInput.value.trim(),
+      tableNumber:orderType.value==="dinein"?tableInput.value.trim():"",
+      address:(orderType.value==="takeaway" || orderType.value==="delivery")?addressInput.value.trim():"",
+      items:cart
+    })
+  }).then(r=>{
+    if(!r.ok)throw new Error();
+    return r.json().catch(()=>({}));
+  }).then(data=>{
+    submitting=false;
+    placeOrderBtn.innerText="Place Order";
+    toast("Order placed successfully");
+    const orderId = data._id || null;
+    const total = data.total || totalAmount;
+    openPostOrderFlow(orderId,total);
+  }).catch(()=>{
+    submitting=false;
+    placeOrderBtn.innerText="Place Order";
+    alert("❌ Order failed");
+  });
+};
+</script>
+
+</body>
+</html>
+
