@@ -28,7 +28,7 @@
   ],
 
   "Dosa": [
-    { "name": "Rava Dosa", "variants": { "Plate": 75 } },
+    { "name": "Rava Dosa", "variants": { "Plate": 75 }, "IMAGE": "/DOSA.JPG },
     { "name": "Plain Dosa", "variants": { "Plate": 55 } },
     { "name": "Paper Dosa", "variants": { "Plate": 55 } },
     { "name": "Ghee Dosa", "variants": { "Plate": 65 } },
