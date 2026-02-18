@@ -90,6 +90,40 @@
     }
 
     .table-wrapper { overflow-x:auto; }
+
+    /* Inventory toggle switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 24px;
+    }
+    .switch input { display:none; }
+    .slider {
+      position:absolute;
+      cursor:pointer;
+      top:0; left:0; right:0; bottom:0;
+      background-color:#4b5563;
+      transition:.3s;
+      border-radius:999px;
+    }
+    .slider:before {
+      position:absolute;
+      content:"";
+      height:18px;
+      width:18px;
+      left:3px;
+      bottom:3px;
+      background-color:white;
+      transition:.3s;
+      border-radius:999px;
+    }
+    .switch input:checked + .slider {
+      background-color:#22c55e;
+    }
+    .switch input:checked + .slider:before {
+      transform:translateX(22px);
+    }
   </style>
 </head>
 <body class="bg-gradient-to-b from-slate-900 via-gray-900 to-black text-gray-100 min-h-screen">
@@ -113,6 +147,9 @@
       </button>
       <button id="tabAnalytics" class="tab-btn text-xs md:text-sm">
         Analytics &amp; Insights
+      </button>
+      <button id="tabInventory" class="tab-btn text-xs md:text-sm">
+        Inventory
       </button>
     </div>
 
@@ -242,6 +279,37 @@
         </section>
       </div>
     </div>
+
+    <!-- INVENTORY -->
+    <div id="inventorySection" class="hidden mt-4 space-y-3">
+      <section class="bg-gray-900 border border-yellow-400 rounded-2xl p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base md:text-xl font-semibold text-amber-300">
+            📦 Inventory — Show / Hide Items
+          </h2>
+          <button id="saveInventoryBtn"
+            class="bg-amber-400 hover:bg-amber-500 text-black font-semibold rounded-full px-4 py-1.5 text-xs md:text-sm">
+            Save changes
+          </button>
+        </div>
+        <p class="text-xs md:text-sm text-gray-300 mb-2">
+          Toggle the switch to mark an item as <span class="font-semibold text-green-300">Available (ON)</span> or
+          <span class="font-semibold text-red-300">Sold Out (OFF)</span>. Customer menu will update automatically.
+        </p>
+        <div id="inventoryTableWrapper" class="table-wrapper mt-3">
+          <table class="min-w-full text-xs md:text-sm">
+            <thead>
+              <tr class="bg-gray-800 text-gray-200">
+                <th class="px-3 py-2 text-left">Category</th>
+                <th class="px-3 py-2 text-left">Item</th>
+                <th class="px-3 py-2 text-center">Available</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody" class="bg-gray-900 divide-y divide-gray-700"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   </div>
 
   <script>
@@ -261,24 +329,39 @@
 
     const tabOrders = document.getElementById('tabOrders');
     const tabAnalytics = document.getElementById('tabAnalytics');
+    const tabInventory = document.getElementById('tabInventory');
     const ordersSection = document.getElementById('ordersSection');
     const analyticsSection = document.getElementById('analyticsSection');
+    const inventorySection = document.getElementById('inventorySection');
 
     function setTab(active) {
       if (active === 'orders') {
         ordersSection.classList.remove('hidden');
         analyticsSection.classList.add('hidden');
+        inventorySection.classList.add('hidden');
         tabOrders.classList.add('tab-btn-active');
         tabAnalytics.classList.remove('tab-btn-active');
-      } else {
+        tabInventory.classList.remove('tab-btn-active');
+      } else if (active === 'analytics') {
         analyticsSection.classList.remove('hidden');
         ordersSection.classList.add('hidden');
+        inventorySection.classList.add('hidden');
         tabAnalytics.classList.add('tab-btn-active');
         tabOrders.classList.remove('tab-btn-active');
+        tabInventory.classList.remove('tab-btn-active');
+      } else if (active === 'inventory') {
+        inventorySection.classList.remove('hidden');
+        ordersSection.classList.add('hidden');
+        analyticsSection.classList.add('hidden');
+        tabInventory.classList.add('tab-btn-active');
+        tabOrders.classList.remove('tab-btn-active');
+        tabAnalytics.classList.remove('tab-btn-active');
+        loadInventory();   // ensure latest menu
       }
     }
     tabOrders.onclick = () => setTab('orders');
     tabAnalytics.onclick = () => setTab('analytics');
+    tabInventory.onclick = () => setTab('inventory');
 
     async function fetchOrders(date) {
       const res = await fetch('/api/orders?date=' + date);
@@ -420,7 +503,7 @@
       }
       const receipt = buildReceipt(order);
       try {
-        const uri = 'rawbt:' + encodeURIComponent(receipt);  /* RawBT integration */  /* [web:134][web:219][web:220] */
+        const uri = 'rawbt:' + encodeURIComponent(receipt);
         window.location.href = uri;
       } catch (e) {
         alert('Bluetooth print failed: ' + (e.message || e));
@@ -530,6 +613,62 @@
       fetchOrders(datePicker.value);
     });
 
+    // ---------- INVENTORY LOGIC ----------
+    let menuData = null;
+
+    async function loadInventory() {
+      const res = await fetch('/menu.json?_=' + Date.now());
+      menuData = await res.json();
+      const tbody = document.getElementById('inventoryTableBody');
+      let rows = '';
+
+      Object.entries(menuData).forEach(([cat, items]) => {
+        items.forEach((it, idx) => {
+          const inStock = it.available !== false; // default ON
+          rows += `
+            <tr>
+              <td class="px-3 py-2 text-left text-gray-200">${cat}</td>
+              <td class="px-3 py-2 text-left text-gray-100">${it.name}</td>
+              <td class="px-3 py-2 text-center">
+                <label class="switch">
+                  <input type="checkbox" data-cat="${cat}" data-idx="${idx}" ${inStock ? 'checked' : ''}>
+                  <span class="slider"></span>
+                </label>
+              </td>
+            </tr>`;
+        });
+      });
+
+      tbody.innerHTML = rows;
+    }
+
+    function applyInventoryChanges() {
+      if (!menuData) return;
+      document.querySelectorAll('#inventoryTableBody input[type=checkbox]').forEach(cb => {
+        const cat = cb.dataset.cat;
+        const idx = Number(cb.dataset.idx);
+        menuData[cat][idx].available = cb.checked;  // true = ON
+      });
+    }
+
+    async function saveInventory() {
+      if (!menuData) return;
+      applyInventoryChanges();
+      try {
+        await fetch('/update-menu', {
+          method: 'POST',
+          headers: { 'Content-Type':'application/json' },
+          body: JSON.stringify(menuData)
+        });
+        alert('Inventory updated');
+      } catch (e) {
+        alert('Failed to save inventory');
+      }
+    }
+
+    document.getElementById('saveInventoryBtn').onclick = saveInventory;
+
+    // ---------- INIT ----------
     window.addEventListener('DOMContentLoaded', () => {
       setTab('orders');
       fetchOrders(datePicker.value);
