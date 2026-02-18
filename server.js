@@ -4,7 +4,9 @@ const socketio = require('socket.io');
 const cors     = require('cors');
 const path     = require('path');
 const mongoose = require('mongoose');
-const fs       = require('fs');              // ⬅ NEW: for writing menu.json [web:489]
+const fs       = require('fs');
+const crypto   = require('crypto');          // ⬅ for Razorpay signature
+const Razorpay = require('razorpay');        // ⬅ Razorpay SDK
 
 const app    = express();
 const server = http.createServer(app);
@@ -18,11 +20,20 @@ mongoose.connect(MONGO_URI);
 mongoose.connection.on('connected', () => console.log('✅ Connected to MongoDB (Military Hotel)'));
 mongoose.connection.on('error', (err) => console.error('❌ MongoDB Error:', err));
 
+// --- Razorpay config (TEST keys for now) ---
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || 'rzp_test_SHeRdes0FXhxVe';
+const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || 'EmWtiARdxinflEZvF0uZywvH';
+
+const razorpay = new Razorpay({
+  key_id: RAZORPAY_KEY_ID,
+  key_secret: RAZORPAY_KEY_SECRET
+});
+
 // --- Schema ---
 const orderSchema = new mongoose.Schema({
   orderType: String,              // dinein | takeaway | delivery
   customerName: String,
-  registrationNumber: String,     // NEW
+  registrationNumber: String,
   mobile: String,
   tableNumber: String,
   address: String,
@@ -43,10 +54,7 @@ app.get('/menu.json', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/menu.json'));
 });
 
-/* 🔴 NEW: endpoint to update menu.json from manager Inventory tab
-   Manager portal will send full updated JSON with availability flags.
-   We simply overwrite public/menu.json on the server. [web:485][web:489]
-*/
+// Inventory: update menu.json
 app.post('/update-menu', (req, res) => {
   try {
     const filePath = path.join(__dirname, 'public', 'menu.json');
@@ -72,6 +80,104 @@ function getISTDateBounds(dateStr) {
   return { start, end };
 }
 
+// ---------------- RAZORPAY APIs ----------------
+
+// 1) Create Razorpay order for payment
+app.post('/api/payments/create-order', async (req, res) => {
+  try {
+    const { amount } = req.body; // in rupees
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Invalid amount' });
+    }
+
+    const options = {
+      amount: Math.round(amount * 100), // rupees -> paise
+      currency: 'INR',
+      receipt: 'mh_' + Date.now(),
+      payment_capture: 1
+    };
+
+    const order = await razorpay.orders.create(options);
+    res.json({
+      id: order.id,
+      amount: order.amount,
+      currency: order.currency
+    });
+  } catch (err) {
+    console.error('Error creating Razorpay order:', err);
+    res.status(500).json({ error: 'Failed to create payment order' });
+  }
+});
+
+// 2) Verify payment + create restaurant order
+app.post('/api/payments/verify-and-create-order', async (req, res) => {
+  try {
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      orderPayload
+    } = req.body;
+
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ error: 'Missing payment details' });
+    }
+
+    const body = razorpay_order_id + '|' + razorpay_payment_id;
+
+    const expectedSignature = crypto
+      .createHmac('sha256', RAZORPAY_KEY_SECRET)
+      .update(body.toString())
+      .digest('hex');
+
+    if (expectedSignature !== razorpay_signature) {
+      console.error('Signature mismatch');
+      return res.status(400).json({ error: 'Invalid payment signature' });
+    }
+
+    // payment verified -> create order in DB
+    const {
+      orderType,
+      customerName,
+      registrationNumber,
+      mobile,
+      tableNumber,
+      address,
+      items
+    } = orderPayload || {};
+
+    const total = (items || []).reduce(
+      (s, i) => s + (i.price || 0) * (i.qty || 0),
+      0
+    );
+
+    const order = new Order({
+      orderType,
+      customerName,
+      registrationNumber,
+      mobile,
+      tableNumber,
+      address,
+      items,
+      total,
+      status: 'incoming'
+    });
+
+    await order.save();
+    io.emit('newOrder', order);
+
+    res.json({
+      success: true,
+      order,
+      razorpay_payment_id,
+      razorpay_order_id
+    });
+  } catch (err) {
+    console.error('Error verifying payment / creating order:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // ---------------- ORDERS APIs ----------------
 
 // Get orders for a given date (IST)
@@ -85,7 +191,7 @@ app.get('/api/orders', async (req, res) => {
   res.json(orders);
 });
 
-// Place new order
+// Place new order (keep this for COD / offline if you want)
 app.post('/api/orders', async (req, res) => {
   const {
     orderType,
@@ -112,7 +218,7 @@ app.post('/api/orders', async (req, res) => {
   });
 
   await order.save();
-  io.emit('newOrder', order); // real-time emit to manager
+  io.emit('newOrder', order);
   res.json(order);
 });
 
@@ -123,7 +229,7 @@ app.patch('/api/orders/:id/status', async (req, res) => {
 
   const order = await Order.findByIdAndUpdate(id, { status }, { new: true });
   if (order) {
-    io.emit('orderUpdated', order); // notify managers
+    io.emit('orderUpdated', order);
     res.json(order);
   } else {
     res.status(404).json({ error: 'Order not found' });
