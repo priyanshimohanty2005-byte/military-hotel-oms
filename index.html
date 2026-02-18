@@ -11,7 +11,7 @@
 :root{
   --bg:#0b0b0b;
   --paper:#1e1e1e;
-  --gold:#d4af37;
+  --accent:#A3D834;  /* parrot green */
   --text:#f5f5f5;
 }
 *{box-sizing:border-box}
@@ -31,7 +31,7 @@ body{
   height:100vh;
   padding:18px 14px 130px;
   background:
-    radial-gradient(circle at center, rgba(212,175,55,.05), transparent 60%),
+    radial-gradient(circle at center, rgba(163,216,52,.06), transparent 60%),
     linear-gradient(160deg,#111,#1f1f1f);
   position:relative;
 }
@@ -48,7 +48,7 @@ body{
 /* HEADINGS */
 h1,h2{
   font-family:"Playfair Display",serif;
-  color:var(--gold);
+  color:var(--accent);
   margin-bottom:10px;
 }
 h1{font-size:2.4rem}
@@ -69,7 +69,7 @@ h2{font-size:1.4rem}
   top:50%;
   transform:translateY(-50%);
   font-size:26px;
-  color:var(--gold);
+  color:var(--accent);
   cursor:pointer;
   z-index:20;
   opacity:.75;
@@ -93,12 +93,15 @@ h2{font-size:1.4rem}
   top:12px;
   right:12px;
   background:#2a2a2a;
-  color:var(--gold);
+  color:var(--accent);
   padding:8px 16px;
   border-radius:20px;
   font-size:.9rem;
   z-index:30;
+  border:1px solid var(--accent);
 }
+
+/* CONTENTS GRID */
 .contents-grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -106,12 +109,14 @@ h2{font-size:1.4rem}
   max-width:440px;
 }
 .contents-card{
-  background:#2a2a2a;
+  background:#1f1f1f;
   padding:16px;
   border-radius:16px;
   font-weight:600;
   text-align:center;
   cursor:pointer;
+  border:1px solid rgba(163,216,52,.7);
+  color:var(--text);
 }
 
 /* ITEMS */
@@ -124,29 +129,33 @@ h2{font-size:1.4rem}
   .items-grid{grid-template-columns:repeat(3,1fr)}
 }
 .item{
-  background:#2a2a2a;
+  background:#1f1f1f;
   border-radius:14px;
   padding:10px;
   font-size:.8rem;
+  border:1px solid rgba(163,216,52,.4);
 }
-.item b{display:block;font-size:.9rem;margin-bottom:4px}
-.price{font-size:.75rem;color:var(--gold);margin-bottom:6px}
+.item b{display:block;font-size:.9rem;margin-bottom:4px;color:#ffffff}
+.price{font-size:.75rem;color:var(--accent);margin-bottom:6px}
 select{
   width:100%;
   padding:7px;
   border-radius:8px;
-  border:none;
+  border:1px solid rgba(163,216,52,.6);
   font-size:.75rem;
   margin-bottom:6px;
+  background:#111;
+  color:var(--text);
 }
 .add{
   width:100%;
   padding:7px;
   border-radius:18px;
   border:none;
-  background:linear-gradient(90deg,#d4af37,#f2d57c);
+  background:var(--accent);
   font-weight:600;
   font-size:.78rem;
+  color:#000;
 }
 
 /* FOOTER CART BAR */
@@ -154,7 +163,7 @@ select{
   position:fixed;
   bottom:0;left:0;right:0;
   background:#111;
-  border-top:2px solid var(--gold);
+  border-top:2px solid var(--accent);
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -163,7 +172,7 @@ select{
 }
 #cartSummary{font-weight:600}
 #checkoutBtn{
-  background:var(--gold);
+  background:var(--accent);
   color:#000;
   padding:10px 18px;
   border-radius:22px;
@@ -188,6 +197,11 @@ select{
   border-radius:18px;
   display:flex;
   flex-direction:column;
+  border:1px solid rgba(163,216,52,.6);
+}
+#cartBox h3{
+  margin-top:0;
+  color:var(--accent);
 }
 #cartItems{flex:1;overflow:auto;margin-bottom:10px}
 .cart-row{
@@ -205,14 +219,17 @@ input,select#orderType{
   width:100%;
   padding:10px;
   border-radius:10px;
-  border:none;
+  border:1px solid rgba(163,216,52,.6);
   margin-bottom:8px;
   font-size:.9rem;
+  background:#111;
+  color:#fff;
 }
 .primary{
-  background:linear-gradient(90deg,#d4af37,#f2d57c);
+  background:var(--accent);
   border:none;padding:12px;border-radius:26px;
   font-weight:700;width:100%;
+  color:#000;
 }
 
 /* TOAST */
@@ -222,7 +239,7 @@ input,select#orderType{
   left:50%;
   transform:translateX(-50%);
   background:#222;
-  color:var(--gold);
+  color:var(--accent);
   padding:10px 18px;
   border-radius:20px;
   font-size:.8rem;
@@ -261,10 +278,11 @@ input,select#orderType{
   width:90%;
   max-width:420px;
   text-align:center;
+  border:1px solid rgba(163,216,52,.6);
 }
 #postOrderBox h3{
   margin-top:0;
-  color:var(--gold);
+  color:var(--accent);
 }
 .post-note{
   font-size:.85rem;
@@ -303,21 +321,21 @@ input,select#orderType{
     <div id="cartItems"></div>
     <b>Total: ₹<span id="total">0</span></b>
 
+    <!-- ONLY DELIVERY OPTION -->
     <select id="orderType">
       <option value="">Select Order Type</option>
-      <option value="dinein">Dine In</option>
-      <option value="takeaway">Takeaway</option>
       <option value="delivery">Delivery</option>
     </select>
 
     <input id="regno" placeholder="Registration Number">
     <input id="name" placeholder="Customer Name">
     <input id="mobile" placeholder="Mobile Number">
+    <!-- table removed, always hidden -->
     <input id="table" placeholder="Table Number" style="display:none">
-    <input id="address" placeholder="Address" style="display:none">
+    <input id="address" placeholder="Delivery Address">
 
     <button class="primary" id="placeOrderBtn">Place Order</button>
-    <button onclick="closeCart()">Close</button>
+    <button class="primary" style="margin-top:6px;background:#222;color:#fff;border:1px solid rgba(163,216,52,.5);" onclick="closeCart()">Close</button>
   </div>
 </div>
 
@@ -412,10 +430,8 @@ document.addEventListener("touchend",e=>{
 checkoutBtn.onclick=()=>cartModal.style.display="block";
 function closeCart(){cartModal.style.display="none"}
 
-orderType.onchange=()=>{
-  tableInput.style.display   = orderType.value==="dinein" ? "block" : "none";
-  addressInput.style.display = (orderType.value==="takeaway" || orderType.value==="delivery") ? "block" : "none";
-};
+/* since only delivery, always show address field */
+orderType.onchange=()=>{};
 
 /* TOAST */
 function toast(msg){
@@ -429,14 +445,83 @@ function toast(msg){
 fetch("/menu.json").then(r=>r.json()).then(m=>{menu=m;build();});
 
 function build(){
+  /* FIRST PAGE (MH BOARD STYLE) */
   book.innerHTML+=`
-  <section class="page center">
-    <h1>Military Hotel</h1>
-    <p>Delicious Meals & Biryani</p>
-    <p>📞 +91-XXXXXXXXXX</p>
-    <button class="primary" onclick="go(1)">Open Menu</button>
+  <section class="page">
+    <div style="
+      position:absolute;inset:0;
+      display:flex;flex-direction:column;
+      justify-content:center;align-items:center;
+      text-align:center;
+    ">
+
+      <div style="
+        font-family:'Poppins',sans-serif;
+        color:#ffffff;
+        letter-spacing:0.35em;
+        font-size:0.9rem;
+        margin-bottom:14px;
+      ">
+        SURYA'S
+      </div>
+
+      <div style="display:flex;align-items:flex-end;gap:10px;margin-bottom:10px;">
+        <span style="
+          font-family:'Playfair Display',serif;
+          font-weight:900;
+          font-size:5rem;
+          line-height:1;
+          color:#ffffff;
+        ">M</span>
+        <span style="
+          font-family:'Playfair Display',serif;
+          font-weight:900;
+          font-size:5rem;
+          line-height:1;
+          color:#A3D834;
+        ">H</span>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:8px;">
+        <span style="
+          font-family:'Poppins',sans-serif;
+          font-weight:800;
+          font-size:1.8rem;
+          letter-spacing:0.15em;
+          color:#A3D834;
+        ">
+          MILITARY
+        </span>
+        <span style="
+          font-family:'Poppins',sans-serif;
+          font-weight:800;
+          font-size:1.8rem;
+          letter-spacing:0.15em;
+          color:#ffffff;
+        ">
+          HOTEL
+        </span>
+      </div>
+
+      <div style="
+        font-family:'Poppins',sans-serif;
+        font-size:0.75rem;
+        letter-spacing:0.22em;
+        text-transform:uppercase;
+        color:#f5f5f5;
+        margin-bottom:18px;
+      ">
+        KOONASEEMA ROOTS &amp; GODAVARI RICHNESS
+      </div>
+
+      <div style="font-size:0.9rem;margin-bottom:10px;">
+        📞 +91-XXXXXXXXXX
+      </div>
+      <button class="primary" onclick="go(1)">Open Menu</button>
+    </div>
   </section>`;
 
+  /* CONTENTS PAGE */
   let contents="",start=2;
   Object.keys(menu).forEach(c=>{
     contents+=`<div class="contents-card" onclick="go(${start})">${c}</div>`;
@@ -450,6 +535,7 @@ function build(){
     <div class="pageNo">2</div>
   </section>`;
 
+  /* CATEGORY PAGES WITH IMAGE SUPPORT */
   let pg=3;
   for(let [cat,items] of Object.entries(menu)){
     for(let i=0;i<items.length;i+=ITEMS_PER_PAGE){
@@ -457,10 +543,14 @@ function build(){
       let html=`<h2>${i===0?cat:cat+" (Continued)"}</h2><div class="items-grid">`;
       slice.forEach(it=>{
         const min=Math.min(...Object.values(it.variants));
+        const img = it.image || "";
         let opts=`<option value="">Choose option</option>`+
           Object.entries(it.variants).map(v=>`<option value="${v[1]}">${v[0]} — ₹${v[1]}</option>`).join("");
         html+=`
         <div class="item">
+          ${img ? `<div style="width:100%;height:90px;margin-bottom:6px;overflow:hidden;border-radius:10px;">
+                     <img src="${img}" alt="${it.name}" style="width:100%;height:100%;object-fit:cover;">
+                   </div>` : ``}
           <b>${it.name}</b>
           <div class="price">From ₹${min}</div>
           <select>${opts}</select>
@@ -546,7 +636,7 @@ payQRBtn.onclick=()=>{
   cashSection.style.display="none";
   qrSection.style.display="block";
 
-  const upiId="YOUR_UPI_ID@bank"; // TODO: set Military Hotel UPI
+  const upiId="YOUR_UPI_ID@bank"; // TODO: set UPI
   const upiName="Military Hotel";
   const note = lastOrderId ? `Order ${lastOrderId}` : "Military Hotel Order";
   const amount = lastOrderTotal || 0;
@@ -568,9 +658,7 @@ placeOrderBtn.onclick=()=>{
   if(!nameInput.value.trim())return alert("Enter name");
   if(!mobileInput.value.trim())return alert("Enter mobile");
   if(!orderType.value)return alert("Select order type");
-  if(orderType.value==="dinein"&&!tableInput.value.trim())return alert("Enter table number");
-  if((orderType.value==="takeaway" || orderType.value==="delivery") && !addressInput.value.trim())
-    return alert("Enter address");
+  if(!addressInput.value.trim())return alert("Enter delivery address");
 
   const totalAmount = cart.reduce((s,i)=>s + i.qty*i.price,0);
 
@@ -585,8 +673,8 @@ placeOrderBtn.onclick=()=>{
       customerName:nameInput.value.trim(),
       registrationNumber:regInput.value.trim(),
       mobile:mobileInput.value.trim(),
-      tableNumber:orderType.value==="dinein"?tableInput.value.trim():"",
-      address:(orderType.value==="takeaway" || orderType.value==="delivery")?addressInput.value.trim():"",
+      tableNumber:"",
+      address:addressInput.value.trim(),
       items:cart
     })
   }).then(r=>{
@@ -609,4 +697,3 @@ placeOrderBtn.onclick=()=>{
 
 </body>
 </html>
-
