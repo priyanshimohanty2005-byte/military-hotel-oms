@@ -11,7 +11,7 @@
 :root{
   --bg:#0b0b0b;
   --paper:#1e1e1e;
-  --accent:#A3D834;  /* parrot green */
+  --accent:#A3D834;
   --text:#f5f5f5;
 }
 *{box-sizing:border-box}
@@ -158,15 +158,6 @@ select{
   color:#000;
 }
 
-/* SOLD OUT STATE */
-.item.sold-out{
-  opacity:0.55;
-}
-.item.sold-out .add{
-  background:#555;
-  color:#ccc;
-}
-
 /* FOOTER CART BAR */
 #cartBar{
   position:fixed;
@@ -269,45 +260,6 @@ input,select#orderType{
   font-size:.75rem;
   z-index:70;
 }
-
-/* POST-ORDER MODAL */
-#postOrderModal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.8);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:80;
-}
-#postOrderBox{
-  background:#1f1f1f;
-  padding:18px;
-  border-radius:18px;
-  width:90%;
-  max-width:420px;
-  text-align:center;
-  border:1px solid rgba(163,216,52,.6);
-}
-#postOrderBox h3{
-  margin-top:0;
-  color:var(--accent);
-}
-.post-note{
-  font-size:.85rem;
-  color:#ddd;
-}
-.post-small{
-  font-size:.75rem;
-  color:#aaa;
-}
-#billLine{
-  font-size:.9rem;
-  margin:8px 0;
-}
-.post-btn{
-  margin-top:8px;
-}
 </style>
 </head>
 
@@ -330,6 +282,7 @@ input,select#orderType{
     <div id="cartItems"></div>
     <b>Total: ₹<span id="total">0</span></b>
 
+    <!-- ONLY DELIVERY OPTION -->
     <select id="orderType">
       <option value="">Select Order Type</option>
       <option value="delivery">Delivery</option>
@@ -341,46 +294,13 @@ input,select#orderType{
     <input id="table" placeholder="Table Number" style="display:none">
     <input id="address" placeholder="Delivery Address">
 
-    <button class="primary" id="placeOrderBtn">Place Order</button>
+    <button class="primary" id="placeOrderBtn">Pay & Place Order</button>
     <button class="primary" style="margin-top:6px;background:#222;color:#fff;border:1px solid rgba(163,216,52,.5);" onclick="closeCart()">Close</button>
   </div>
 </div>
 
 <div id="toast"></div>
 <div id="hint">Swipe or use arrows to browse menu</div>
-
-<div id="postOrderModal">
-  <div id="postOrderBox">
-    <h3>Order placed successfully</h3>
-    <p class="post-note">
-      Please complete payment at the counter to receive your order.
-    </p>
-    <p id="billLine"></p>
-
-    <div style="margin:10px 0;font-weight:600;">Select payment method</div>
-    <button id="payCashBtn" class="primary post-btn">Pay with Cash at Counter</button>
-    <button id="payQRBtn" class="primary post-btn">Pay via QR (UPI)</button>
-
-    <div id="cashSection" style="display:none;margin-top:14px;">
-      <p class="post-note">
-        Please go to the counter and pay the above amount.<br>
-        Payment confirmation needs to be done at the counter to receive your order.
-      </p>
-      <button id="cashDoneBtn" class="primary post-btn">Done</button>
-    </div>
-
-    <div id="qrSection" style="display:none;margin-top:14px;">
-      <p class="post-note">
-        Scan this QR to pay the exact bill amount via UPI.
-      </p>
-      <div id="qrBox" style="background:#000;padding:10px;border-radius:12px;display:inline-block;"></div>
-      <p class="post-small">
-        After payment, please confirm at the counter to receive your order.
-      </p>
-      <button id="qrDoneBtn" class="primary post-btn">Done</button>
-    </div>
-  </div>
-</div>
 
 <!-- Razorpay Checkout -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -402,16 +322,6 @@ const mobileInput=document.getElementById("mobile");
 const tableInput=document.getElementById("table");
 const addressInput=document.getElementById("address");
 const orderType=document.getElementById("orderType");
-
-const postOrderModal=document.getElementById("postOrderModal");
-const billLine=document.getElementById("billLine");
-const payCashBtn=document.getElementById("payCashBtn");
-const payQRBtn=document.getElementById("payQRBtn");
-const cashSection=document.getElementById("cashSection");
-const qrSection=document.getElementById("qrSection");
-const cashDoneBtn=document.getElementById("cashDoneBtn");
-const qrDoneBtn=document.getElementById("qrDoneBtn");
-const qrBox=document.getElementById("qrBox");
 
 let cart=[],page=0,locked=false,menu={};
 const ITEMS_PER_PAGE=window.innerWidth<500?6:8;
@@ -453,7 +363,7 @@ fetch("/menu.json?_=" + Date.now(), { cache: "no-store" })
   .then(m=>{menu=m;build();});
 
 function build(){
-  /* FIRST PAGE */
+  /* FIRST PAGE (MH BOARD STYLE) */
   book.innerHTML+=`
   <section class="page">
     <div style="
@@ -543,7 +453,7 @@ function build(){
     <div class="pageNo">2</div>
   </section>`;
 
-  /* CATEGORY PAGES */
+  /* CATEGORY PAGES WITH IMAGE SUPPORT */
   let pg=3;
   for(let [cat,items] of Object.entries(menu)){
     for(let i=0;i<items.length;i+=ITEMS_PER_PAGE){
@@ -552,21 +462,17 @@ function build(){
       slice.forEach(it=>{
         const min=Math.min(...Object.values(it.variants));
         const img = it.image || "";
-        const inStock = it.available !== false;
-
         let opts=`<option value="">Choose option</option>`+
           Object.entries(it.variants).map(v=>`<option value="${v[1]}">${v[0]} — ₹${v[1]}</option>`).join("");
         html+=`
-        <div class="item ${inStock ? "" : "sold-out"}">
+        <div class="item">
           ${img ? `<div style="width:100%;height:90px;margin-bottom:6px;overflow:hidden;border-radius:10px;">
                      <img src="${img}" alt="${it.name}" style="width:100%;height:100%;object-fit:cover;">
                    </div>` : ``}
           <b>${it.name}</b>
-          <div class="price">${inStock ? `From ₹${min}` : `Sold out`}</div>
-          <select ${inStock ? "" : "disabled"}>${opts}</select>
-          <button class="add" ${inStock ? "" : "disabled"} onclick="add('${it.name}',this)">
-            ${inStock ? "Add" : "Sold out"}
-          </button>
+          <div class="price">From ₹${min}</div>
+          <select>${opts}</select>
+          <button class="add" onclick="add('${it.name}',this)">Add</button>
         </div>`;
       });
       html+=`</div>`;
@@ -617,51 +523,61 @@ function chg(i,d){
   updateCart();
 }
 
-/* POST-ORDER FLOW */
-let lastOrderId=null;
-let lastOrderTotal=0;
+/* SIMPLE SUCCESS OVERLAY */
+function showSuccessAndReset(total){
+  const overlay=document.createElement("div");
+  overlay.style.position="fixed";
+  overlay.style.inset="0";
+  overlay.style.background="rgba(0,0,0,0.85)";
+  overlay.style.display="flex";
+  overlay.style.alignItems="center";
+  overlay.style.justifyContent="center";
+  overlay.style.zIndex="100";
 
-function openPostOrderFlow(orderId,total){
-  lastOrderId=orderId;
-  lastOrderTotal=total;
-  billLine.innerText=`Bill Amount: ₹${total}`;
-  cashSection.style.display="none";
-  qrSection.style.display="none";
-  qrBox.innerHTML="";
-  postOrderModal.style.display="flex";
+  overlay.innerHTML=`
+    <div style="
+      background:#1f1f1f;
+      padding:18px;
+      border-radius:18px;
+      width:88%;
+      max-width:360px;
+      text-align:center;
+      border:1px solid rgba(163,216,52,.6);
+      font-family:Poppins,sans-serif;
+      color:#f5f5f5;
+    ">
+      <h3 style="margin-top:0;color:#A3D834;">Order placed successfully</h3>
+      <p style="font-size:.9rem;margin:8px 0 14px;">
+        Your payment is completed and your order has been received.
+      </p>
+      <div style="font-weight:600;margin-bottom:14px;">
+        Bill Amount: ₹${total}
+      </div>
+      <button id="successDoneBtn" style="
+        background:#A3D834;
+        border:none;
+        padding:10px 18px;
+        border-radius:22px;
+        font-weight:700;
+        color:#000;
+        width:100%;
+        font-size:.9rem;
+      ">
+        Done
+      </button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.getElementById("successDoneBtn").onclick=()=>{
+    document.body.removeChild(overlay);
+    cart=[];
+    updateCart();
+    closeCart();
+    go(0);
+  };
 }
 
-function resetToMenu(){
-  postOrderModal.style.display="none";
-  cart=[];
-  updateCart();
-  closeCart();
-  go(0);
-}
-
-payCashBtn.onclick=()=>{
-  cashSection.style.display="block";
-  qrSection.style.display="none";
-};
-
-payQRBtn.onclick=()=>{
-  cashSection.style.display="none";
-  qrSection.style.display="block";
-
-  const upiId="YOUR_UPI_ID@bank";
-  const upiName="Military Hotel";
-  const note = lastOrderId ? `Order ${lastOrderId}` : "Military Hotel Order";
-  const amount = lastOrderTotal || 0;
-
-  const upiUrl=`upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
-  const qrApi=`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiUrl)}`;
-  qrBox.innerHTML=`<img src="${qrApi}" alt="UPI QR" style="width:220px;height:220px;">`;
-};
-
-qrDoneBtn.onclick=resetToMenu;
-cashDoneBtn.onclick=resetToMenu;
-
-/* CHECKOUT with Razorpay */
+/* CHECKOUT WITH RAZORPAY */
 let submitting=false;
 placeOrderBtn.onclick = async () => {
   if(submitting)return;
@@ -677,7 +593,7 @@ placeOrderBtn.onclick = async () => {
   submitting=true;
   placeOrderBtn.innerText="Redirecting to payment…";
 
-  try {
+  try{
     const orderRes = await fetch("/api/payments/create-order",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
@@ -687,7 +603,7 @@ placeOrderBtn.onclick = async () => {
     const orderData = await orderRes.json();
 
     const options = {
-      key: "rzp_test_SHeRdes0FXhxVe",
+      key: "rzp_live_SHeD6vJgn6a4ye", // Live Key ID
       amount: orderData.amount,
       currency: orderData.currency,
       name: "Military Hotel",
@@ -721,44 +637,43 @@ placeOrderBtn.onclick = async () => {
           if(!verifyRes.ok){
             alert("Payment verification failed. Contact staff.");
             submitting=false;
-            placeOrderBtn.innerText="Place Order";
+            placeOrderBtn.innerText="Pay & Place Order";
             return;
           }
           const data = await verifyRes.json();
           if(!data.success){
             alert("Payment not verified. Contact staff.");
             submitting=false;
-            placeOrderBtn.innerText="Place Order";
+            placeOrderBtn.innerText="Pay & Place Order";
             return;
           }
           submitting=false;
-          placeOrderBtn.innerText="Place Order";
-          toast("Payment successful & order placed");
-          const orderId = data.order._id || null;
+          placeOrderBtn.innerText="Pay & Place Order";
           const total = data.order.total || totalAmount;
-          openPostOrderFlow(orderId,total);
+          showSuccessAndReset(total);
         }catch(e){
           console.error(e);
           alert("Error after payment. Contact staff.");
           submitting=false;
-          placeOrderBtn.innerText="Place Order";
+          placeOrderBtn.innerText="Pay & Place Order";
         }
       },
       modal: {
         ondismiss: function(){
           submitting=false;
-          placeOrderBtn.innerText="Place Order";
+          placeOrderBtn.innerText="Pay & Place Order";
+          toast("Payment cancelled");
         }
       }
     };
 
     const rzp = new Razorpay(options);
     rzp.open();
-  } catch(err){
+  }catch(err){
     console.error(err);
     alert("Could not start payment. Please try again.");
     submitting=false;
-    placeOrderBtn.innerText="Place Order";
+    placeOrderBtn.innerText="Pay & Place Order";
   }
 };
 </script>
