@@ -5,8 +5,10 @@ const cors     = require('cors');
 const path     = require('path');
 const mongoose = require('mongoose');
 const fs       = require('fs');
-const crypto   = require('crypto');          // ⬅ for Razorpay signature
-const Razorpay = require('razorpay');        // ⬅ Razorpay SDK
+const crypto   = require('crypto');
+const Razorpay = require('razorpay');
+
+require('dotenv').config();
 
 const app    = express();
 const server = http.createServer(app);
@@ -20,9 +22,13 @@ mongoose.connect(MONGO_URI);
 mongoose.connection.on('connected', () => console.log('✅ Connected to MongoDB (Military Hotel)'));
 mongoose.connection.on('error', (err) => console.error('❌ MongoDB Error:', err));
 
-// --- Razorpay config (TEST keys for now) ---
-const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || 'rzp_test_SHeRdes0FXhxVe';
-const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || 'EmWtiARdxinflEZvF0uZywvH';
+// --- Razorpay config (LIVE via env) ---
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
+const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
+
+if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
+  console.error('❌ Razorpay keys missing. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.');
+}
 
 const razorpay = new Razorpay({
   key_id: RAZORPAY_KEY_ID,
@@ -135,7 +141,6 @@ app.post('/api/payments/verify-and-create-order', async (req, res) => {
       return res.status(400).json({ error: 'Invalid payment signature' });
     }
 
-    // payment verified -> create order in DB
     const {
       orderType,
       customerName,
@@ -191,7 +196,7 @@ app.get('/api/orders', async (req, res) => {
   res.json(orders);
 });
 
-// Place new order (keep this for COD / offline if you want)
+// Place new order (for COD/offline if needed)
 app.post('/api/orders', async (req, res) => {
   const {
     orderType,
