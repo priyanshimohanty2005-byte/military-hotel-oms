@@ -330,7 +330,6 @@ input,select#orderType{
     <div id="cartItems"></div>
     <b>Total: ₹<span id="total">0</span></b>
 
-    <!-- ONLY DELIVERY OPTION -->
     <select id="orderType">
       <option value="">Select Order Type</option>
       <option value="delivery">Delivery</option>
@@ -339,7 +338,6 @@ input,select#orderType{
     <input id="regno" placeholder="Registration Number">
     <input id="name" placeholder="Customer Name">
     <input id="mobile" placeholder="Mobile Number">
-    <!-- table removed, always hidden -->
     <input id="table" placeholder="Table Number" style="display:none">
     <input id="address" placeholder="Delivery Address">
 
@@ -351,7 +349,6 @@ input,select#orderType{
 <div id="toast"></div>
 <div id="hint">Swipe or use arrows to browse menu</div>
 
-<!-- POST-ORDER PAYMENT MODAL -->
 <div id="postOrderModal">
   <div id="postOrderBox">
     <h3>Order placed successfully</h3>
@@ -384,6 +381,9 @@ input,select#orderType{
     </div>
   </div>
 </div>
+
+<!-- Razorpay Checkout -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
 setTimeout(()=>document.getElementById("hint").style.display="none",5000);
@@ -439,9 +439,6 @@ document.addEventListener("touchend",e=>{
 checkoutBtn.onclick=()=>cartModal.style.display="block";
 function closeCart(){cartModal.style.display="none"}
 
-/* since only delivery, always show address field */
-orderType.onchange=()=>{};
-
 /* TOAST */
 function toast(msg){
   const t=document.getElementById("toast");
@@ -456,7 +453,7 @@ fetch("/menu.json?_=" + Date.now(), { cache: "no-store" })
   .then(m=>{menu=m;build();});
 
 function build(){
-  /* FIRST PAGE (MH BOARD STYLE) */
+  /* FIRST PAGE */
   book.innerHTML+=`
   <section class="page">
     <div style="
@@ -546,7 +543,7 @@ function build(){
     <div class="pageNo">2</div>
   </section>`;
 
-  /* CATEGORY PAGES WITH IMAGE + AVAILABILITY SUPPORT */
+  /* CATEGORY PAGES */
   let pg=3;
   for(let [cat,items] of Object.entries(menu)){
     for(let i=0;i<items.length;i+=ITEMS_PER_PAGE){
@@ -555,7 +552,7 @@ function build(){
       slice.forEach(it=>{
         const min=Math.min(...Object.values(it.variants));
         const img = it.image || "";
-        const inStock = it.available !== false;  // default ON if missing
+        const inStock = it.available !== false;
 
         let opts=`<option value="">Choose option</option>`+
           Object.entries(it.variants).map(v=>`<option value="${v[1]}">${v[0]} — ₹${v[1]}</option>`).join("");
@@ -651,7 +648,7 @@ payQRBtn.onclick=()=>{
   cashSection.style.display="none";
   qrSection.style.display="block";
 
-  const upiId="YOUR_UPI_ID@bank"; // TODO: set UPI
+  const upiId="YOUR_UPI_ID@bank";
   const upiName="Military Hotel";
   const note = lastOrderId ? `Order ${lastOrderId}` : "Military Hotel Order";
   const amount = lastOrderTotal || 0;
@@ -664,9 +661,9 @@ payQRBtn.onclick=()=>{
 qrDoneBtn.onclick=resetToMenu;
 cashDoneBtn.onclick=resetToMenu;
 
-/* CHECKOUT */
+/* CHECKOUT with Razorpay */
 let submitting=false;
-placeOrderBtn.onclick=()=>{
+placeOrderBtn.onclick = async () => {
   if(submitting)return;
   if(cart.length===0)return alert("Cart empty");
   if(!regInput.value.trim())return alert("Enter registration number");
@@ -678,35 +675,91 @@ placeOrderBtn.onclick=()=>{
   const totalAmount = cart.reduce((s,i)=>s + i.qty*i.price,0);
 
   submitting=true;
-  placeOrderBtn.innerText="Placing order…";
+  placeOrderBtn.innerText="Redirecting to payment…";
 
-  fetch("/api/orders",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      orderType:orderType.value,
-      customerName:nameInput.value.trim(),
-      registrationNumber:regInput.value.trim(),
-      mobile:mobileInput.value.trim(),
-      tableNumber:"",
-      address:addressInput.value.trim(),
-      items:cart
-    })
-  }).then(r=>{
-    if(!r.ok)throw new Error();
-    return r.json().catch(()=>({}));
-  }).then(data=>{
+  try {
+    const orderRes = await fetch("/api/payments/create-order",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ amount: totalAmount })
+    });
+    if(!orderRes.ok) throw new Error("Failed to create payment order");
+    const orderData = await orderRes.json();
+
+    const options = {
+      key: "rzp_test_SHeRdes0FXhxVe",
+      amount: orderData.amount,
+      currency: orderData.currency,
+      name: "Military Hotel",
+      description: "Order Payment",
+      order_id: orderData.id,
+      prefill: {
+        name: nameInput.value.trim(),
+        contact: mobileInput.value.trim()
+      },
+      theme: { color: "#A3D834" },
+      handler: async function (response) {
+        try{
+          const verifyRes = await fetch("/api/payments/verify-and-create-order",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              orderPayload:{
+                orderType:orderType.value,
+                customerName:nameInput.value.trim(),
+                registrationNumber:regInput.value.trim(),
+                mobile:mobileInput.value.trim(),
+                tableNumber:"",
+                address:addressInput.value.trim(),
+                items:cart
+              }
+            })
+          });
+          if(!verifyRes.ok){
+            alert("Payment verification failed. Contact staff.");
+            submitting=false;
+            placeOrderBtn.innerText="Place Order";
+            return;
+          }
+          const data = await verifyRes.json();
+          if(!data.success){
+            alert("Payment not verified. Contact staff.");
+            submitting=false;
+            placeOrderBtn.innerText="Place Order";
+            return;
+          }
+          submitting=false;
+          placeOrderBtn.innerText="Place Order";
+          toast("Payment successful & order placed");
+          const orderId = data.order._id || null;
+          const total = data.order.total || totalAmount;
+          openPostOrderFlow(orderId,total);
+        }catch(e){
+          console.error(e);
+          alert("Error after payment. Contact staff.");
+          submitting=false;
+          placeOrderBtn.innerText="Place Order";
+        }
+      },
+      modal: {
+        ondismiss: function(){
+          submitting=false;
+          placeOrderBtn.innerText="Place Order";
+        }
+      }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+  } catch(err){
+    console.error(err);
+    alert("Could not start payment. Please try again.");
     submitting=false;
     placeOrderBtn.innerText="Place Order";
-    toast("Order placed successfully");
-    const orderId = data._id || null;
-    const total = data.total || totalAmount;
-    openPostOrderFlow(orderId,total);
-  }).catch(()=>{
-    submitting=false;
-    placeOrderBtn.innerText="Place Order";
-    alert("❌ Order failed");
-  });
+  }
 };
 </script>
 
