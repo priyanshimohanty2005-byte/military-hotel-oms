@@ -4,6 +4,7 @@ const socketio = require('socket.io');
 const cors     = require('cors');
 const path     = require('path');
 const mongoose = require('mongoose');
+const fs       = require('fs');              // ⬅ NEW: for writing menu.json [web:489]
 
 const app    = express();
 const server = http.createServer(app);
@@ -40,6 +41,27 @@ app.use(express.static(path.join(__dirname, 'public')));
 // --- Serve menu file ---
 app.get('/menu.json', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/menu.json'));
+});
+
+/* 🔴 NEW: endpoint to update menu.json from manager Inventory tab
+   Manager portal will send full updated JSON with availability flags.
+   We simply overwrite public/menu.json on the server. [web:485][web:489]
+*/
+app.post('/update-menu', (req, res) => {
+  try {
+    const filePath = path.join(__dirname, 'public', 'menu.json');
+    const data = JSON.stringify(req.body, null, 2);
+    fs.writeFile(filePath, data, 'utf8', (err) => {
+      if (err) {
+        console.error('Error writing menu.json:', err);
+        return res.status(500).json({ error: 'Failed to save menu' });
+      }
+      res.json({ success: true });
+    });
+  } catch (e) {
+    console.error('Error in /update-menu:', e);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // --- Utility: IST date boundaries ---
@@ -241,4 +263,3 @@ app.get('/health', (req, res) => {
 server.listen(PORT, () => {
   console.log(`🚀 Military Hotel Server running on http://localhost:${PORT}`);
 });
-
