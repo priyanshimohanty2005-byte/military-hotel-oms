@@ -46,8 +46,11 @@ const orderSchema = new mongoose.Schema({
   items: Array,
   total: Number,
   status: { type: String, default: 'incoming' },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now, index: true }
 });
+
+// Auto-delete orders after 90 days (3 months)
+orderSchema.index({ createdAt: 1 }, { expireAfterSeconds: 7776000 });
 
 const Order = mongoose.model('Order', orderSchema);
 
