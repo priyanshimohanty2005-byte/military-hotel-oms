@@ -158,6 +158,24 @@ select{
   color:#000;
 }
 
+/* SOLD OUT RIBBON */
+.sold-out-ribbon {
+  position:absolute;
+  top:8px;
+  left:-4px;
+  background:#ef4444;
+  color:#fff;
+  font-size:0.65rem;
+  font-weight:700;
+  padding:4px 10px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  transform:rotate(-90deg);
+  transform-origin:left top;
+  border-radius:4px 4px 0 0;
+  box-shadow:0 0 6px rgba(0,0,0,0.4);
+}
+
 /* FOOTER CART BAR */
 #cartBar{
   position:fixed;
@@ -454,7 +472,7 @@ function build(){
     <div class="pageNo">2</div>
   </section>`;
 
-  /* CATEGORY PAGES WITH STOCK OUT SUPPORT */
+  /* CATEGORY PAGES WITH SOLD OUT RIBBON */
   let pg=3;
   for(let [cat,items] of Object.entries(menu)){
     for(let i=0;i<items.length;i+=ITEMS_PER_PAGE){
@@ -468,7 +486,8 @@ function build(){
         let opts=`<option value="">Choose option</option>`+
           Object.entries(it.variants).map(v=>`<option value="${v[1]}">${v[0]} — ₹${v[1]}</option>`).join("");
         html+=`
-        <div class="item" style="${!inStock ? 'opacity:0.6;' : ''}">
+        <div class="item" style="position:relative;${!inStock ? 'opacity:0.65;' : ''}">
+          ${!inStock ? `<div class="sold-out-ribbon">Sold out</div>` : ``}
           ${img ? `<div style="width:100%;height:90px;margin-bottom:6px;overflow:hidden;border-radius:10px;">
                      <img src="${img}" alt="${it.name}" style="width:100%;height:100%;object-fit:cover;">
                    </div>` : ``}
@@ -478,7 +497,7 @@ function build(){
             inStock
               ? `<select>${opts}</select>
                  <button class="add" onclick="add('${it.name}',this)">Add</button>`
-              : `<div style="margin-top:6px;font-size:0.8rem;color:#f97373;font-weight:600;">Stock out</div>`
+              : `<div style="margin-top:6px;font-size:0.78rem;color:#fca5a5;font-weight:600;">Currently unavailable</div>`
           }
         </div>`;
       });
