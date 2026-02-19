@@ -466,6 +466,9 @@
       out += `Order Type: ${String(order.orderType || '').toUpperCase()}\n`;
       out += `Customer: ${order.customerName || '-'}\n`;
       out += `Reg No: ${order.registrationNumber || '-'}\n`;
+      if (order.mobile) {
+        out += `Mobile: ${order.mobile}\n`;
+      }
       if(order.orderType==='dinein'){
         out += `Table: ${order.tableNumber || '-'}\n`;
       } else {
