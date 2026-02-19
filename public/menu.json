@@ -92,8 +92,8 @@
   ],
 
   "Extras": [
-    { "name": "White chutney", "variants": { "Plate": 10 }, "available": true },
+    { "name": "White chutney", "variants": { "Plate": 10 },"image": "/DOSA.JPG", "available": true },
     { "name": "Red chutney", "variants": { "Plate": 10 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Bombay chutney", "variants": { "Plate": 10 }, "available": true }
+    { "name": "Bombay chutney", "variants": { "Plate": 10 },"image": "/DOSA.JPG", "available": true }
   ]
 }
