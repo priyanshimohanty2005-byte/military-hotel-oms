@@ -17,6 +17,8 @@
     { "name": "Mysore Bonda & Idli Mix", "variants": { "Plate": 55 }, "available": true },
     { "name": "Mysore Bonda & Vada Mix", "variants": { "Plate": 55 }, "available": true },
     { "name": "Mysore Bonda & Punugulu Mix", "variants": { "Plate": 55 }, "available": true },
+    { "name": "Bellam Garelu (3 pc)", "variants": { "Plate": 65 }, "available": true },
+    { "name": "Perugavada (3pc)", "variants": { "Plate": 65 }, "available": true },
     { "name": "Punugulu & Idli Mix", "variants": { "Plate": 55 }, "available": true },
     { "name": "Punugulu & Vada Mix", "variants": { "Plate": 55 }, "available": true },
     { "name": "Mirchi Bhajji (4pc)", "variants": { "Plate": 65 }, "available": true },
