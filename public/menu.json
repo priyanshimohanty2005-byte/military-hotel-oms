@@ -1,31 +1,31 @@
 {
-  "Idli & Bona's": [
-    { "name": "Idli (4pc)", "variants": { "Plate": 55 },"image": "/.JPG", "available": true },
+  "Idli & Bonda's": [
+    { "name": "Idli (4pc)", "variants": { "Plate": 55 },"image": "/Idly.JPG", "available": true },
     { "name": "Ghee Podi Idli (3pc)", "variants": { "Plate": 65 },"image": "/Ghee Podi Idli.JPG", "available": true },
     { "name": "Ragii Idli (3pc)", "variants": { "Plate": 65 },"image": "/Ragi Idli Recipe.JPG", "available": true },
-    { "name": "Millets Idli (3pc)", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Millets Idli (3pc)", "variants": { "Plate": 65 },"image": "/millet.JPG", "available": true },
     { "name": "Aaviri Kudum Idli (1pc)", "variants": { "Plate": 55 }, "image": "/aaviri kudam idli.JPG", "available": true },
-    { "name": "Vada (4pc)", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Vada (4pc)", "variants": { "Plate": 55 },"image": "/vada.JPG", "available": true },
     { "name": "Punugulu (12pc)", "variants": { "Plate": 55 },"image": "/punugulu.JPG", "available": true },
     { "name": "Onion Bonda (6pc)", "variants": { "Plate": 55 },"image": "/Onion Bonda Recipe.JPG", "available": true },
-    { "name": "Mysore Bonda (6pc)", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Mysore Bonda (6pc)", "variants": { "Plate": 55 },"image": "/Mysore Bonda.JPG", "available": true },
     { "name": "Onion Pakodi", "variants": { "Plate": 55 },"image": "/ONION PAKODA.JPG", "available": true },
-    { "name": "Onion & Mysore Bonda Mix", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Onion Bonda & Punugulu Mix", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Onion Bonda & Idli Mix", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Onion Bonda & Vada Mix", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Mysore Bonda & Idli Mix", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Mysore Bonda & Vada Mix", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Mysore Bonda & Punugulu Mix", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Bellam Garelu (3 pc)", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Perugavada (3pc)", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Punugulu & Idli Mix", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Punugulu & Vada Mix", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Mirchi Bhajji (4pc)", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Tomato Bhajji (4pc)", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Masala Bottani", "variants": { "Plate": 45 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Onion & Mysore Bonda Mix", "variants": { "Plate": 55 }, "available": true },
+    { "name": "Onion Bonda & Punugulu Mix", "variants": { "Plate": 55 }, "available": true },
+    { "name": "Onion Bonda & Idli Mix", "variants": { "Plate": 55 }, "available": true },
+    { "name": "Onion Bonda & Vada Mix", "variants": { "Plate": 55 }, "available": true },
+    { "name": "Mysore Bonda & Idli Mix", "variants": { "Plate": 55 }, "available": true },
+    { "name": "Mysore Bonda & Vada Mix", "variants": { "Plate": 55 }, "available": true },
+    { "name": "Mysore Bonda & Punugulu Mix", "variants": { "Plate": 55 }, "available": true },
+    { "name": "Bellam Garelu (3 pc)", "variants": { "Plate": 65 }, "available": true },
+    { "name": "Perugavada (3pc)", "variants": { "Plate": 65 }, "available": true },
+    { "name": "Punugulu & Idli Mix", "variants": { "Plate": 55 }, "available": true },
+    { "name": "Punugulu & Vada Mix", "variants": { "Plate": 55 }, "available": true },
+    { "name": "Mirchi Bhajji (4pc)", "variants": { "Plate": 65 },"image": "/mirchibhajji.JPG", "available": true },
+    { "name": "Tomato Bhajji (4pc)", "variants": { "Plate": 65 },"image": "/Tomato bajji.JPG", "available": true },
+    { "name": "Masala Bottani", "variants": { "Plate": 45 },"image": "/masalabottani.JPG", "available": true },
     { "name": "Uggani Poha", "variants": { "Plate": 55 },"image": "/poha.JPG", "available": true },
-    { "name": "Upma", "variants": { "Plate": 45 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Upma", "variants": { "Plate": 45 },"image": "/upma.JPG", "available": true },
     { "name": "Semiya Upma", "variants": { "Plate": 55 },"image": "/semiya upma.JPG", "available": true }
   ],
 
@@ -35,16 +35,16 @@
     { "name": "Paper Dosa", "variants": { "Plate": 55 },"image": "/paper dosa.JPG", "available": true },
     { "name": "Ghee Dosa", "variants": { "Plate": 65 },"image": "/ghee dosa.JPG", "available": true },
     { "name": "Butter Dosa", "variants": { "Plate": 65 },"image": "/butter dosa.JPG", "available": true },
-    { "name": "Masala Dosa", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Masala Dosa", "variants": { "Plate": 65 },"image": "/masala dosa.JPG", "available": true },
     { "name": "Onion Dosa", "variants": { "Plate": 65 },"image": "/Oniondosa.JPG", "available": true },
     { "name": "Ghee Masala Dosa", "variants": { "Plate": 75 },"image": "/ghee masala dosa.JPG", "available": true },
     { "name": "Onion Masala Dosa", "variants": { "Plate": 75 },"image": "/onion masala dosa.JPG", "available": true },
     { "name": "Butter Masala Dosa", "variants": { "Plate": 75 },"image": "/Butter Masala Dosa.JPG", "available": true },
-    { "name": "Upma Dosa", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Upma Dosa", "variants": { "Plate": 65 },"image": "/Upma Dosa.JPG", "available": true },
     { "name": "Ghee Upma Dosa", "variants": { "Plate": 75 },"image": "/ghee upma Dosa.JPG", "available": true },
-    { "name": "Nellore Karam Upma Dosa", "variants": { "Plate": 75 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Nellore Karam Upma Dosa", "variants": { "Plate": 75 },"image": "/nellore karam upma dosa.JPG", "available": true },
     { "name": "Onion Upma Dosa", "variants": { "Plate": 75 },"image": "/onion upma dosa.JPG", "available": true },
-    { "name": "Nellore Karam Dosa", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Nellore Karam Dosa", "variants": { "Plate": 65 },"image": "/nellore Karam Dosa.JPG", "available": true },
     { "name": "Podi Dosa", "variants": { "Plate": 65 },"image": "/podi dosa.JPG", "available": true },
     { "name": "Ghee Podi Dosa", "variants": { "Plate": 75 },"image": "/Ghee Podi Dosa.JPG", "available": true },
     { "name": "Podi Onion Dosa", "variants": { "Plate": 75 },"image": "/onionpodidosat.JPG", "available": true },
@@ -56,26 +56,26 @@
     { "name": "Onion Pesarattu", "variants": { "Plate": 85 },"image": "/onion pesarattu.JPG", "available": true },
     { "name": "Plain Pesarattu", "variants": { "Plate": 75 },"image": "/plain pesarattu.JPG", "available": true },
     { "name": "Ghee Pesarattu", "variants": { "Plate": 85 },"image": "/ghee pesarattu.JPG", "available": true },
-    { "name": "Karam Pesarattu", "variants": { "Plate": 75 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Masala Pesarattu", "variants": { "Plate": 85 },"image": "/DOSA.JPG", "available": true }
+    { "name": "Karam Pesarattu", "variants": { "Plate": 75 },"image": "/karam pesarattu.JPG", "available": true },
+    { "name": "Masala Pesarattu", "variants": { "Plate": 85 },"image": "/masala pesarattu.JPG", "available": true }
   ],
 
   "Set Dosa & Uttapam": [
-    { "name": "Set Dosa", "variants": { "Plate": 75 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Set Dosa", "variants": { "Plate": 75 },"image": "/Set Dosa.JPG", "available": true },
     { "name": "Onion Set Dosa", "variants": { "Plate": 85 },"image": "/onion set dosa.JPG", "available": true },
-    { "name": "Karam Set Dosa", "variants": { "Plate": 85 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Karam Set Dosa", "variants": { "Plate": 85 },"image": "/karam set dosa.JPG", "available": true },
     { "name": "Paneer Set Dosa", "variants": { "Plate": 95 },"image": "/paneer set dosa.JPG", "available": true },
-    { "name": "Uttapam", "variants": { "Plate": 85 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Uttapam", "variants": { "Plate": 85 },"image": "/Uthappam.JPG", "available": true },
     { "name": "Paneer Uttapam", "variants": { "Plate": 95 },"image": "/paneer uttapam.JPG", "available": true }
   ],
 
   "Attu": [
     { "name": "Dibbarottu With Bellampakam", "variants": { "Plate": 75 },"image": "/debbarotti with bellampakam.JPG", "available": true },
-    { "name": "Plain Attu", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Onion Attu", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Karam Attu", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Masala Attu", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Upma Attu", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true }
+    { "name": "Plain Attu", "variants": { "Plate": 55 }, "available": true },
+    { "name": "Onion Attu", "variants": { "Plate": 65 },"image": "/onion attu.JPG", "available": true },
+    { "name": "Karam Attu", "variants": { "Plate": 65 },"image": "/karam attu.JPG", "available": true },
+    { "name": "Masala Attu", "variants": { "Plate": 65 },"image": "/masala attu .JPG", "available": true },
+    { "name": "Upma Attu", "variants": { "Plate": 65 },"image": "/Upma attu-copy.JPG", "available": true }
   ],
 
   "Combos & Specials": [
@@ -85,14 +85,14 @@
     { "name": "Paneer Dosa", "variants": { "Plate": 95 },"image": "/paneer dosa.JPG", "available": true },
     { "name": "Pizza Dosa", "variants": { "Plate": 95 },"image": "/pizza dosa.JPG", "available": true },
     { "name": "Palak Dosa", "variants": { "Plate": 75 },"image": "/Palak Dosa.JPG", "available": true },
-    { "name": "Tomato Dosa", "variants": { "Plate": 75 }, "available": true },
+    { "name": "Tomato Dosa", "variants": { "Plate": 75 },"image": "/tomato dosa.JPG", "available": true },
     { "name": "Corn Dosa", "variants": { "Plate": 85 },"image": "/corn dosa.JPG", "available": true },
     { "name": "Capsicum Dosa", "variants": { "Plate": 85 },"image": "/capsicum dosa.JPG", "available": true },
-    { "name": "Mushroom Dosa", "variants": { "Plate": 95 }, "available": true }
+    { "name": "Mushroom Dosa", "variants": { "Plate": 95 },"image": "/Mushroom dosa.JPG", "available": true }
   ],
 
   "Extras": [
-    { "name": "White chutney", "variants": { "Plate": 10 },"image": "/DOSA.JPG", "available": true },
+    { "name": "White chutney", "variants": { "Plate": 10 },"image": "/white chutney.JPG", "available": true },
     { "name": "Red chutney", "variants": { "Plate": 10 },"image": "/red chutney.JPG", "available": true },
     { "name": "Bombay chutney", "variants": { "Plate": 10 },"image": "/Bombay Chutney.JPG", "available": true }
   ]
