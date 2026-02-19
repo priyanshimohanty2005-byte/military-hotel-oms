@@ -158,24 +158,6 @@ select{
   color:#000;
 }
 
-/* SOLD OUT RIBBON */
-.sold-out-ribbon {
-  position:absolute;
-  top:8px;
-  left:-4px;
-  background:#ef4444;
-  color:#fff;
-  font-size:0.65rem;
-  font-weight:700;
-  padding:4px 10px;
-  text-transform:uppercase;
-  letter-spacing:0.08em;
-  transform:rotate(-90deg);
-  transform-origin:left top;
-  border-radius:4px 4px 0 0;
-  box-shadow:0 0 6px rgba(0,0,0,0.4);
-}
-
 /* FOOTER CART BAR */
 #cartBar{
   position:fixed;
@@ -458,7 +440,7 @@ function build(){
     </div>
   </section>`;
 
-  /* CONTENTS PAGE (keep all categories) */
+  /* CONTENTS PAGE */
   let contents="",start=2;
   Object.keys(menu).forEach(c=>{
     contents+=`<div class="contents-card" onclick="go(${start})">${c}</div>`;
@@ -472,22 +454,24 @@ function build(){
     <div class="pageNo">2</div>
   </section>`;
 
-  /* CATEGORY PAGES WITH SOLD OUT RIBBON */
+  /* CATEGORY PAGES – Sold out like screenshot */
   let pg=3;
-  for(let [cat,items] of Object.entries(menu)){
-    for(let i=0;i<items.length;i+=ITEMS_PER_PAGE){
-      let slice=items.slice(i,i+ITEMS_PER_PAGE);
-      let html=`<h2>${i===0?cat:cat+" (Continued)"}</h2><div class="items-grid">`;
-      slice.forEach(it=>{
-        const min=Math.min(...Object.values(it.variants));
+  for (let [cat, items] of Object.entries(menu)) {
+    for (let i = 0; i < items.length; i += ITEMS_PER_PAGE) {
+      let slice = items.slice(i, i + ITEMS_PER_PAGE);
+      let html = `<h2>${i === 0 ? cat : cat + " (Continued)"}</h2><div class="items-grid">`;
+      slice.forEach(it => {
+        const min = Math.min(...Object.values(it.variants));
         const img = it.image || "";
         const inStock = it.available !== false; // default ON
 
-        let opts=`<option value="">Choose option</option>`+
-          Object.entries(it.variants).map(v=>`<option value="${v[1]}">${v[0]} — ₹${v[1]}</option>`).join("");
-        html+=`
-        <div class="item" style="position:relative;${!inStock ? 'opacity:0.65;' : ''}">
-          ${!inStock ? `<div class="sold-out-ribbon">Sold out</div>` : ``}
+        let opts = `<option value="">Choose option</option>` +
+          Object.entries(it.variants)
+            .map(v => `<option value="${v[1]}">${v[0]} — ₹${v[1]}</option>`)
+            .join("");
+
+        html += `
+        <div class="item">
           ${img ? `<div style="width:100%;height:90px;margin-bottom:6px;overflow:hidden;border-radius:10px;">
                      <img src="${img}" alt="${it.name}" style="width:100%;height:100%;object-fit:cover;">
                    </div>` : ``}
@@ -495,14 +479,24 @@ function build(){
           <div class="price">From ₹${min}</div>
           ${
             inStock
-              ? `<select>${opts}</select>
-                 <button class="add" onclick="add('${it.name}',this)">Add</button>`
-              : `<div style="margin-top:6px;font-size:0.78rem;color:#fca5a5;font-weight:600;">Currently unavailable</div>`
+              ? `
+                <select>${opts}</select>
+                <button class="add" onclick="add('${it.name}',this)">Add</button>
+              `
+              : `
+                <div style="margin-top:6px;font-size:0.85rem;color:#A3D834;font-weight:600;">
+                  Sold out
+                </div>
+                <select disabled style="opacity:0.5;">
+                  <option>Choose option</option>
+                </select>
+                <button class="add" disabled style="background:#444;color:#888;">Sold out</button>
+              `
           }
         </div>`;
       });
-      html+=`</div>`;
-      book.innerHTML+=`<section class="page">${html}<div class="pageNo">${pg++}</div></section>`;
+      html += `</div>`;
+      book.innerHTML += `<section class="page">${html}<div class="pageNo">${pg++}</div></section>`;
     }
   }
 }
@@ -629,7 +623,7 @@ placeOrderBtn.onclick = async () => {
     const orderData = await orderRes.json();
 
     const options = {
-      key: "rzp_live_SHeD6vJgn6a4ye", // Live Key ID
+      key: "rzp_live_SHeD6vJgn6a4ye",
       amount: orderData.amount,
       currency: orderData.currency,
       name: "Military Hotel",
