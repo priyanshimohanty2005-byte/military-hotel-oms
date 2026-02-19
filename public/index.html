@@ -324,7 +324,6 @@ const addressInput=document.getElementById("address");
 const orderType=document.getElementById("orderType");
 
 let cart=[],page=0,locked=false,menu={};
-const ITEMS_PER_PAGE=window.innerWidth<500?6:8;
 
 /* NAV */
 function go(i){
@@ -443,8 +442,16 @@ function build(){
   /* CONTENTS PAGE */
   let contents="",start=2;
   Object.keys(menu).forEach(c=>{
+    // compute pages for this category with same per-category logic
+    const items = menu[c];
+    const hasImages = items.some(it => it.image);
+    const perPage   = hasImages
+      ? (window.innerWidth < 500 ? 4 : 6)
+      : (window.innerWidth < 500 ? 6 : 8);
+    const pagesForCat = Math.ceil(items.length / perPage);
+
     contents+=`<div class="contents-card" onclick="go(${start})">${c}</div>`;
-    start+=Math.ceil(menu[c].length/ITEMS_PER_PAGE);
+    start+=pagesForCat;
   });
 
   book.innerHTML+=`
@@ -454,11 +461,17 @@ function build(){
     <div class="pageNo">2</div>
   </section>`;
 
-  /* CATEGORY PAGES – Sold out like screenshot */
+  /* CATEGORY PAGES – variable items per page */
   let pg=3;
   for (let [cat, items] of Object.entries(menu)) {
-    for (let i = 0; i < items.length; i += ITEMS_PER_PAGE) {
-      let slice = items.slice(i, i + ITEMS_PER_PAGE);
+
+    const hasImages = items.some(it => it.image);
+    const perPage   = hasImages
+      ? (window.innerWidth < 500 ? 4 : 6)   // categories with images
+      : (window.innerWidth < 500 ? 6 : 8);  // categories without images
+
+    for (let i = 0; i < items.length; i += perPage) {
+      let slice = items.slice(i, i + perPage);
       let html = `<h2>${i === 0 ? cat : cat + " (Continued)"}</h2><div class="items-grid">`;
       slice.forEach(it => {
         const min = Math.min(...Object.values(it.variants));
