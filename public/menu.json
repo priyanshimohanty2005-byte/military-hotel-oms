@@ -1,6 +1,6 @@
 {
   "Idli & Bonda's": [
-    { "name": "Idli (4pc)", "variants": { "Plate": 55 },"image": "/Idly.JPG", "available": true },
+    { "name": "Idli (4pc)", "variants": { "Plate": 55 },"image": "/Idly.jpg", "available": true },
     { "name": "Ghee Podi Idli (3pc)", "variants": { "Plate": 65 },"image": "/Ghee Podi Idli.JPG", "available": true },
     { "name": "Ragii Idli (3pc)", "variants": { "Plate": 65 },"image": "/Ragi Idli Recipe.JPG", "available": true },
     { "name": "Millets Idli (3pc)", "variants": { "Plate": 65 },"image": "/millet.JPG", "available": true },
