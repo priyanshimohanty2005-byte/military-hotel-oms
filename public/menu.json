@@ -2,11 +2,11 @@
   "Idli & Bona's": [
     { "name": "Idli (4pc)", "variants": { "Plate": 55 },"image": "/.JPG", "available": true },
     { "name": "Ghee Podi Idli (3pc)", "variants": { "Plate": 65 },"image": "/Ghee Podi Idli.JPG", "available": true },
-    { "name": "Ragii Idli (3pc)", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Ragii Idli (3pc)", "variants": { "Plate": 65 },"image": "/Ragi Idli Recipe.JPG", "available": true },
     { "name": "Millets Idli (3pc)", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
     { "name": "Aaviri Kudum Idli (1pc)", "variants": { "Plate": 55 }, "image": "/aaviri kudam idli.JPG", "available": true },
     { "name": "Vada (4pc)", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Punugulu (12pc)", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Punugulu (12pc)", "variants": { "Plate": 55 },"image": "/punugulu.JPG", "available": true },
     { "name": "Onion Bonda (6pc)", "variants": { "Plate": 55 },"image": "/Onion Bonda Recipe.JPG", "available": true },
     { "name": "Mysore Bonda (6pc)", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
     { "name": "Onion Pakodi", "variants": { "Plate": 55 },"image": "/ONION PAKODA.JPG", "available": true },
@@ -24,14 +24,14 @@
     { "name": "Mirchi Bhajji (4pc)", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
     { "name": "Tomato Bhajji (4pc)", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
     { "name": "Masala Bottani", "variants": { "Plate": 45 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Uggani Poha", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Uggani Poha", "variants": { "Plate": 55 },"image": "/poha.JPG", "available": true },
     { "name": "Upma", "variants": { "Plate": 45 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Semiya Upma", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true }
+    { "name": "Semiya Upma", "variants": { "Plate": 55 },"image": "/semiya upma.JPG", "available": true }
   ],
 
   "Dosa": [
-    { "name": "Rava Dosa", "variants": { "Plate": 75 }, "image": "/DOSA.JPG", "available": true },
-    { "name": "Plain Dosa", "variants": { "Plate": 55 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Rava Dosa", "variants": { "Plate": 75 }, "image": "/rava dosa.JPG", "available": true },
+    { "name": "Plain Dosa", "variants": { "Plate": 55 },"image": "/plaindosa.JPG", "available": true },
     { "name": "Paper Dosa", "variants": { "Plate": 55 },"image": "/paper dosa.JPG", "available": true },
     { "name": "Ghee Dosa", "variants": { "Plate": 65 },"image": "/ghee dosa.JPG", "available": true },
     { "name": "Butter Dosa", "variants": { "Plate": 65 },"image": "/butter dosa.JPG", "available": true },
@@ -45,7 +45,7 @@
     { "name": "Nellore Karam Upma Dosa", "variants": { "Plate": 75 },"image": "/DOSA.JPG", "available": true },
     { "name": "Onion Upma Dosa", "variants": { "Plate": 75 },"image": "/onion upma dosa.JPG", "available": true },
     { "name": "Nellore Karam Dosa", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Podi Dosa", "variants": { "Plate": 65 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Podi Dosa", "variants": { "Plate": 65 },"image": "/podi dosa.JPG", "available": true },
     { "name": "Ghee Podi Dosa", "variants": { "Plate": 75 },"image": "/Ghee Podi Dosa.JPG", "available": true },
     { "name": "Podi Onion Dosa", "variants": { "Plate": 75 },"image": "/onionpodidosat.JPG", "available": true },
     { "name": "Ghee Karam Dosa", "variants": { "Plate": 75 },"image": "/ghee karam dosa.JPG", "available": true }
@@ -54,7 +54,7 @@
   "Pesarattu": [
     { "name": "Upma Pesarattu", "variants": { "Plate": 85 },"image": "/Pesarattu Upma Recipe.JPG", "available": true },
     { "name": "Onion Pesarattu", "variants": { "Plate": 85 },"image": "/onion pesarattu.JPG", "available": true },
-    { "name": "Plain Pesarattu", "variants": { "Plate": 75 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Plain Pesarattu", "variants": { "Plate": 75 },"image": "/plain pesarattu.JPG", "available": true },
     { "name": "Ghee Pesarattu", "variants": { "Plate": 85 },"image": "/ghee pesarattu.JPG", "available": true },
     { "name": "Karam Pesarattu", "variants": { "Plate": 75 },"image": "/DOSA.JPG", "available": true },
     { "name": "Masala Pesarattu", "variants": { "Plate": 85 },"image": "/DOSA.JPG", "available": true }
@@ -93,7 +93,7 @@
 
   "Extras": [
     { "name": "White chutney", "variants": { "Plate": 10 },"image": "/DOSA.JPG", "available": true },
-    { "name": "Red chutney", "variants": { "Plate": 10 },"image": "/DOSA.JPG", "available": true },
+    { "name": "Red chutney", "variants": { "Plate": 10 },"image": "/red chutney.JPG", "available": true },
     { "name": "Bombay chutney", "variants": { "Plate": 10 },"image": "/Bombay Chutney.JPG", "available": true }
   ]
 }
