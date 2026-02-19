@@ -41,7 +41,7 @@
     { "name": "Onion Masala Dosa", "variants": { "Plate": 75 },"image": "/onion masala dosa.jpg", "available": true },
     { "name": "Butter Masala Dosa", "variants": { "Plate": 75 },"image": "/Butter Masala Dosa.jpg", "available": true },
     { "name": "Upma Dosa", "variants": { "Plate": 65 },"image": "/Upma Dosa.jpg", "available": true },
-    { "name": "Ghee Upma Dosa", "variants": { "Plate": 75 },"image": "/ghee Upma Dosa.jpg", "available": true },
+    { "name": "Ghee Upma Dosa", "variants": { "Plate": 75 },"image": "/ghee Upma Dosa .jpg", "available": true },
     { "name": "Nellore Karam Upma Dosa", "variants": { "Plate": 75 },"image": "/nellore karam upma dosa.png", "available": true },
     { "name": "Onion Upma Dosa", "variants": { "Plate": 75 },"image": "/onion upma dosa.jpg", "available": true },
     { "name": "Nellore Karam Dosa", "variants": { "Plate": 65 },"image": "/nellore Karam Dosa.jpg", "available": true },
