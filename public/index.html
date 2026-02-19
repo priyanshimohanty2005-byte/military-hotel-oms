@@ -440,14 +440,11 @@ function build(){
     </div>
   </section>`;
 
-  /* CONTENTS PAGE (respect availability) */
+  /* CONTENTS PAGE (keep all categories) */
   let contents="",start=2;
-  Object.entries(menu).forEach(([c,items])=>{
-    const visibleItems = items.filter(it => it.available !== false);
-    if (!visibleItems.length) return; // skip fully OFF category
-    const pagesForCat = Math.ceil(visibleItems.length / ITEMS_PER_PAGE);
+  Object.keys(menu).forEach(c=>{
     contents+=`<div class="contents-card" onclick="go(${start})">${c}</div>`;
-    start+=pagesForCat;
+    start+=Math.ceil(menu[c].length/ITEMS_PER_PAGE);
   });
 
   book.innerHTML+=`
@@ -457,29 +454,32 @@ function build(){
     <div class="pageNo">2</div>
   </section>`;
 
-  /* CATEGORY PAGES WITH IMAGE + AVAILABILITY SUPPORT */
+  /* CATEGORY PAGES WITH STOCK OUT SUPPORT */
   let pg=3;
   for(let [cat,items] of Object.entries(menu)){
-    const visibleItems = items.filter(it => it.available !== false); // only in stock
-    if (!visibleItems.length) continue;
-
-    for(let i=0;i<visibleItems.length;i+=ITEMS_PER_PAGE){
-      let slice=visibleItems.slice(i,i+ITEMS_PER_PAGE);
+    for(let i=0;i<items.length;i+=ITEMS_PER_PAGE){
+      let slice=items.slice(i,i+ITEMS_PER_PAGE);
       let html=`<h2>${i===0?cat:cat+" (Continued)"}</h2><div class="items-grid">`;
       slice.forEach(it=>{
         const min=Math.min(...Object.values(it.variants));
         const img = it.image || "";
+        const inStock = it.available !== false; // default ON
+
         let opts=`<option value="">Choose option</option>`+
           Object.entries(it.variants).map(v=>`<option value="${v[1]}">${v[0]} — ₹${v[1]}</option>`).join("");
         html+=`
-        <div class="item">
+        <div class="item" style="${!inStock ? 'opacity:0.6;' : ''}">
           ${img ? `<div style="width:100%;height:90px;margin-bottom:6px;overflow:hidden;border-radius:10px;">
                      <img src="${img}" alt="${it.name}" style="width:100%;height:100%;object-fit:cover;">
                    </div>` : ``}
           <b>${it.name}</b>
           <div class="price">From ₹${min}</div>
-          <select>${opts}</select>
-          <button class="add" onclick="add('${it.name}',this)">Add</button>
+          ${
+            inStock
+              ? `<select>${opts}</select>
+                 <button class="add" onclick="add('${it.name}',this)">Add</button>`
+              : `<div style="margin-top:6px;font-size:0.8rem;color:#f97373;font-weight:600;">Stock out</div>`
+          }
         </div>`;
       });
       html+=`</div>`;
