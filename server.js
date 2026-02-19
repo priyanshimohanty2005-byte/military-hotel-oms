@@ -51,6 +51,17 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model('Order', orderSchema);
 
+// --- AUTO PRINT QUEUE ---
+let printQueue = [];
+
+async function saveAndBroadcastOrder(orderData) {
+  const order = new Order(orderData);
+  await order.save();
+  io.emit('newOrder', order);   // real-time to manager portal
+  printQueue.push(order);       // enqueue for auto print
+  return order;
+}
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -156,7 +167,7 @@ app.post('/api/payments/verify-and-create-order', async (req, res) => {
       0
     );
 
-    const order = new Order({
+    const order = await saveAndBroadcastOrder({
       orderType,
       customerName,
       registrationNumber,
@@ -167,9 +178,6 @@ app.post('/api/payments/verify-and-create-order', async (req, res) => {
       total,
       status: 'incoming'
     });
-
-    await order.save();
-    io.emit('newOrder', order);
 
     res.json({
       success: true,
@@ -210,7 +218,7 @@ app.post('/api/orders', async (req, res) => {
 
   const total = (items || []).reduce((s, i) => s + (i.price || 0) * (i.qty || 0), 0);
 
-  const order = new Order({
+  const order = await saveAndBroadcastOrder({
     orderType,
     customerName,
     registrationNumber,
@@ -222,8 +230,6 @@ app.post('/api/orders', async (req, res) => {
     status: 'incoming'
   });
 
-  await order.save();
-  io.emit('newOrder', order);
   res.json(order);
 });
 
@@ -357,6 +363,34 @@ app.get('/api/dashboard/repeatcustomers', async (req, res) => {
     .sort((a, b) => b[1] - a[1])
     .map(([name, count]) => ({ _id: name, orders: count }));
   res.json(sorted);
+});
+
+// --------------- AUTO-PRINT TICKET API ---------------
+app.get('/api/next-print-ticket', (req, res) => {
+  if (printQueue.length === 0) {
+    return res.status(204).send(); // nothing to print
+  }
+
+  const order = printQueue.shift(); // oldest order
+
+  let lines = [];
+  lines.push('MILITARY HOTEL');
+  lines.push('--------------------------');
+  lines.push(`Order ID: ${order._id}`);
+  lines.push(`Type   : ${order.orderType}`);
+  if (order.customerName)       lines.push(`Name   : ${order.customerName}`);
+  if (order.registrationNumber) lines.push(`Reg No : ${order.registrationNumber}`);
+  if (order.mobile)             lines.push(`Mobile : ${order.mobile}`);
+  if (order.address)            lines.push(`Addr   : ${order.address}`);
+  lines.push('--------------------------');
+  (order.items || []).forEach(it => {
+    lines.push(`${it.name} x${it.qty}  ₹${it.price}`);
+  });
+  lines.push('--------------------------');
+  lines.push(`Total: ₹${order.total}`);
+  lines.push('\n\n\n');
+
+  res.type('text/plain').send(lines.join('\n'));
 });
 
 // ---------------- SOCKET.IO ----------------
