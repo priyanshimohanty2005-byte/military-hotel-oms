@@ -173,9 +173,15 @@
           Contact: <b>+91-XXXXXXXXXX</b> • Live orders, dashboards, Bluetooth print
         </p>
       </div>
-      <a href="/index.html" class="px-3 py-1.5 md:px-4 md:py-2 bg-gray-800 rounded-full text-[11px] md:text-sm text-gray-200">
-        Customer View
-      </a>
+      <div class="flex flex-col items-end gap-2">
+        <a href="/index.html" class="px-3 py-1.5 md:px-4 md:py-2 bg-gray-800 rounded-full text-[11px] md:text-sm text-gray-200">
+          Customer View
+        </a>
+        <button id="openChangeLogin"
+          class="px-3 py-1 rounded-full text-[11px] md:text-xs bg-red-500 text-white">
+          Change Login
+        </button>
+      </div>
     </header>
 
     <!-- Tabs -->
@@ -350,32 +356,143 @@
     </div>
   </div>
 
-  <script>
-    // ---- SIMPLE FRONTEND LOGIN (hardcoded) ----
-    const LOGIN_USER = "Military Hotel";
-    const LOGIN_PASS = "Surya";
+  <!-- CHANGE LOGIN MODAL -->
+  <div id="changeLoginModal"
+       class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
+    <div class="bg-slate-900 border border-amber-400 rounded-2xl px-6 py-5 w-80">
+      <h2 class="text-lg font-extrabold text-amber-300 mb-3 text-center">
+        Change Manager Login
+      </h2>
 
+      <label class="block text-xs text-gray-300 mb-1">Current Username</label>
+      <input id="curUser" class="w-full mb-2 px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-sm" />
+
+      <label class="block text-xs text-gray-300 mb-1">Current Password</label>
+      <input id="curPass" type="password" class="w-full mb-3 px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-sm" />
+
+      <label class="block text-xs text-gray-300 mb-1">New Username</label>
+      <input id="newUser" class="w-full mb-2 px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-sm" />
+
+      <label class="block text-xs text-gray-300 mb-1">New Password</label>
+      <input id="newPass" type="password" class="w-full mb-3 px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-sm" />
+
+      <div id="changeLoginError" class="text-[11px] text-red-400 mb-2 hidden"></div>
+
+      <div class="flex gap-2">
+        <button id="saveChangeLogin"
+          class="flex-1 bg-amber-400 hover:bg-amber-500 text-black font-semibold rounded-full py-2 text-sm">
+          Save
+        </button>
+        <button id="cancelChangeLogin"
+          class="flex-1 bg-gray-700 text-gray-200 rounded-full py-2 text-sm">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---- LOGIN via backend ----
     const loginOverlay = document.getElementById('loginOverlay');
     const managerApp   = document.getElementById('managerApp');
     const loginBtn     = document.getElementById('loginBtn');
-    const loginUser    = document.getElementById('loginUser');
-    const loginPass    = document.getElementById('loginPass');
+    const loginUserEl  = document.getElementById('loginUser');
+    const loginPassEl  = document.getElementById('loginPass');
     const loginError   = document.getElementById('loginError');
 
-    loginBtn.onclick = () => {
-      const u = loginUser.value.trim();
-      const p = loginPass.value;
-      if (u === LOGIN_USER && p === LOGIN_PASS) {
-        loginError.classList.add('hidden');
-        loginOverlay.style.display = 'none';
-        managerApp.style.display = 'block';
-      } else {
-        loginError.classList.remove('hidden');
+    loginBtn.onclick = async () => {
+      const username = loginUserEl.value.trim();
+      const password = loginPassEl.value.trim();
+      if (!username || !password) {
+        loginError.textContent = "Enter both username and password.";
+        loginError.classList.remove("hidden");
+        return;
+      }
+      try {
+        const res = await fetch("/api/manager/login", {
+          method: "POST",
+          headers: { "Content-Type":"application/json" },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          loginError.textContent = data.message || "Wrong username or password.";
+          loginError.classList.remove("hidden");
+          return;
+        }
+        loginError.classList.add("hidden");
+        loginOverlay.style.display = "none";
+        managerApp.style.display   = "block";
+      } catch (e) {
+        loginError.textContent = "Server error. Try again.";
+        loginError.classList.remove("hidden");
       }
     };
-    loginPass.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') loginBtn.click();
-    });
+    loginPassEl.addEventListener('keypress', e => { if (e.key === 'Enter') loginBtn.click(); });
+
+    // ---- CHANGE LOGIN MODAL ----
+    const changeLoginModal     = document.getElementById("changeLoginModal");
+    const openChangeLoginBtn   = document.getElementById("openChangeLogin");
+    const cancelChangeLoginBtn = document.getElementById("cancelChangeLogin");
+    const saveChangeLoginBtn   = document.getElementById("saveChangeLogin");
+    const curUserEl            = document.getElementById("curUser");
+    const curPassEl            = document.getElementById("curPass");
+    const newUserEl            = document.getElementById("newUser");
+    const newPassEl            = document.getElementById("newPass");
+    const changeLoginError     = document.getElementById("changeLoginError");
+
+    openChangeLoginBtn.onclick = () => {
+      curUserEl.value = "";
+      curPassEl.value = "";
+      newUserEl.value = "";
+      newPassEl.value = "";
+      changeLoginError.classList.add("hidden");
+      changeLoginModal.classList.remove("hidden");
+      changeLoginModal.classList.add("flex");
+    };
+
+    cancelChangeLoginBtn.onclick = () => {
+      changeLoginModal.classList.add("hidden");
+      changeLoginModal.classList.remove("flex");
+    };
+
+    saveChangeLoginBtn.onclick = async () => {
+      const currentUser     = curUserEl.value.trim();
+      const currentPassword = curPassEl.value.trim();
+      const newUser         = newUserEl.value.trim();
+      const newPassword     = newPassEl.value.trim();
+
+      if (!currentUser || !currentPassword || !newUser || !newPassword) {
+        changeLoginError.textContent = "Fill all fields.";
+        changeLoginError.classList.remove("hidden");
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/manager/change-credentials", {
+          method: "POST",
+          headers: { "Content-Type":"application/json" },
+          body: JSON.stringify({ currentUser, currentPassword, newUser, newPassword })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          changeLoginError.textContent = data.message || "Could not update. Check current login.";
+          changeLoginError.classList.remove("hidden");
+          return;
+        }
+        alert("Login updated. Please login again with new ID and password.");
+        changeLoginModal.classList.add("hidden");
+        changeLoginModal.classList.remove("flex");
+
+        managerApp.style.display   = "none";
+        loginOverlay.style.display = "flex";
+        loginUserEl.value = "";
+        loginPassEl.value = "";
+      } catch (e) {
+        changeLoginError.textContent = "Server error. Try again.";
+        changeLoginError.classList.remove("hidden");
+      }
+    };
 
     // ======= ORIGINAL MANAGER LOGIC =======
     const socket = io();
@@ -522,37 +639,37 @@
     }
 
     const LINE_WIDTH = 30;
-    function line(ch='-'){ return ch.repeat(LINE_WIDTH)+'\n'; }
+    function line(ch='-'){ return ch.repeat(LINE_WIDTH)+'\\n'; }
 
     function buildReceipt(order){
       let out = '';
-      out += 'MILITARY HOTEL\n';
+      out += 'MILITARY HOTEL\\n';
       out += line('-');
-      out += `Order Type: ${String(order.orderType || '').toUpperCase()}\n`;
-      out += `Customer: ${order.customerName || '-'}\n`;
-      out += `Reg No: ${order.registrationNumber || '-'}\n`;
+      out += `Order Type: ${String(order.orderType || '').toUpperCase()}\\n`;
+      out += `Customer: ${order.customerName || '-'}\\n`;
+      out += `Reg No: ${order.registrationNumber || '-'}\\n`;
       if (order.mobile) {
-        out += `Mobile: ${order.mobile}\n`;
+        out += `Mobile: ${order.mobile}\\n`;
       }
       if(order.orderType==='dinein'){
-        out += `Table: ${order.tableNumber || '-'}\n`;
+        out += `Table: ${order.tableNumber || '-'}\\n`;
       } else {
-        out += `Address: ${order.address || '-'}\n`;
+        out += `Address: ${order.address || '-'}\\n`;
       }
       out += line('-');
-      out += 'Items\n';
+      out += 'Items\\n';
       out += line('-');
 
       (order.items || []).forEach(i=>{
         const lineName = `${i.qty||0}x ${i.name || ''}`.slice(0,20);
         const lineAmt  = String((i.price||0)*(i.qty||0)).padStart(6,' ');
-        out += `${lineName.padEnd(22,' ')}${lineAmt}\n`;
+        out += `${lineName.padEnd(22,' ')}${lineAmt}\\n`;
       });
 
       out += line('-');
-      out += `Total: ₹${order.total || 0}\n`;
+      out += `Total: ₹${order.total || 0}\\n`;
       out += line('-');
-      out += 'Thank you!\n';
+      out += 'Thank you!\\n';
       return out;
     }
 
