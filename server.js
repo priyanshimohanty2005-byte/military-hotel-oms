@@ -15,6 +15,10 @@ const server = http.createServer(app);
 const io     = socketio(server);
 const PORT   = process.env.PORT || 3000;
 
+// --- Manager Portal Login (simple in‑memory) ---
+let managerUser = "admin";
+let managerPass = "mh2025";
+
 // --- MongoDB connection (Military Hotel) ---
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://priyanshimohanty2005_db_user:hjmswgA44d97J7xB@military-data.6fkkvhp.mongodb.net/military_hotel?retryWrites=true&w=majority&appName=Military-Data';
 
@@ -68,6 +72,37 @@ async function saveAndBroadcastOrder(orderData) {
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// --- Manager Login API ---
+app.post("/api/manager/login", (req, res) => {
+  const { username, password } = req.body || {};
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: "Missing credentials" });
+  }
+
+  if (username === managerUser && password === managerPass) {
+    return res.json({ success: true });
+  }
+  return res.status(401).json({ success: false, message: "Invalid credentials" });
+});
+
+// --- Change Manager ID / Password ---
+app.post("/api/manager/change-credentials", (req, res) => {
+  const { currentUser, currentPassword, newUser, newPassword } = req.body || {};
+
+  if (!currentUser || !currentPassword || !newUser || !newPassword) {
+    return res.status(400).json({ success: false, message: "All fields are required" });
+  }
+
+  if (currentUser !== managerUser || currentPassword !== managerPass) {
+    return res.status(401).json({ success: false, message: "Current ID / password is incorrect" });
+  }
+
+  managerUser = newUser;
+  managerPass = newPassword;
+
+  return res.json({ success: true });
+});
 
 // --- Serve menu file ---
 app.get('/menu.json', (req, res) => {
@@ -391,9 +426,9 @@ app.get('/api/next-print-ticket', (req, res) => {
   });
   lines.push('--------------------------');
   lines.push(`Total: ₹${order.total}`);
-  lines.push('\n\n\n');
+  lines.push('\\n\\n\\n');
 
-  res.type('text/plain').send(lines.join('\n'));
+  res.type('text/plain').send(lines.join('\\n'));
 });
 
 // ---------------- SOCKET.IO ----------------
