@@ -644,37 +644,37 @@
     }
 
     const LINE_WIDTH = 30;
-    function line(ch='-'){ return ch.repeat(LINE_WIDTH)+'\\n'; }
+    function line(ch='-'){ return ch.repeat(LINE_WIDTH) + '\n'; }
 
     function buildReceipt(order){
       let out = '';
-      out += 'MILITARY HOTEL\\n';
+      out += 'MILITARY HOTEL\n';
       out += line('-');
-      out += `Order Type: ${String(order.orderType || '').toUpperCase()}\\n`;
-      out += `Customer: ${order.customerName || '-'}\\n`;
-      out += `Reg No: ${order.registrationNumber || '-'}\\n`;
+      out += `Order Type: ${String(order.orderType || '').toUpperCase()}\n`;
+      out += `Customer: ${order.customerName || '-'}\n`;
+      out += `Reg No: ${order.registrationNumber || '-'}\n`;
       if (order.mobile) {
-        out += `Mobile: ${order.mobile}\\n`;
+        out += `Mobile: ${order.mobile}\n`;
       }
       if(order.orderType==='dinein'){
-        out += `Table: ${order.tableNumber || '-'}\\n`;
+        out += `Table: ${order.tableNumber || '-'}\n`;
       } else {
-        out += `Address: ${order.address || '-'}\\n`;
+        out += `Address: ${order.address || '-'}\n`;
       }
       out += line('-');
-      out += 'Items\\n';
+      out += 'Items\n';
       out += line('-');
 
       (order.items || []).forEach(i=>{
         const lineName = `${i.qty||0}x ${i.name || ''}`.slice(0,20);
         const lineAmt  = String((i.price||0)*(i.qty||0)).padStart(6,' ');
-        out += `${lineName.padEnd(22,' ')}${lineAmt}\\n`;
+        out += `${lineName.padEnd(22,' ')}${lineAmt}\n`;
       });
 
       out += line('-');
-      out += `Total: ₹${order.total || 0}\\n`;
+      out += `Total: ₹${order.total || 0}\n`;
       out += line('-');
-      out += 'Thank you!\\n';
+      out += 'Thank you!\n';
       return out;
     }
 
