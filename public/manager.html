@@ -174,9 +174,14 @@
         </p>
       </div>
       <div class="flex flex-col items-end gap-2">
-        <a href="/index.html" class="px-3 py-1.5 md:px-4 md:py-2 bg-gray-800 rounded-full text-[11px] md:text-sm text-gray-200">
-          Customer View
-        </a>
+        <!-- Restaurant ON/OFF switch -->
+        <div class="flex items-center gap-2 text-[11px] md:text-xs text-gray-200">
+          <span id="restStatusLabel">Restaurant: ON</span>
+          <label class="switch">
+            <input type="checkbox" id="restStatusToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
         <button id="openChangeLogin"
           class="px-3 py-1 rounded-full text-[11px] md:text-xs bg-red-500 text-white">
           Change Login
@@ -851,6 +856,45 @@
     }
 
     document.getElementById('saveInventoryBtn').onclick = saveInventory;
+
+    // ---------- RESTAURANT ON/OFF using inventory + /update-menu ----------
+    const restStatusLabel  = document.getElementById("restStatusLabel");
+    const restStatusToggle = document.getElementById("restStatusToggle");
+
+    async function setAllItemsAvailability(open) {
+      if (!menuData) {
+        await loadInventory();
+      }
+      Object.keys(menuData).forEach(cat => {
+        menuData[cat].forEach(item => {
+          item.available = open;
+        });
+      });
+
+      try {
+        await fetch('/update-menu', {
+          method: 'POST',
+          headers: { 'Content-Type':'application/json' },
+          body: JSON.stringify(menuData)
+        });
+        await loadInventory();
+      } catch (e) {
+        alert('Failed to toggle restaurant');
+        throw e;
+      }
+    }
+
+    restStatusToggle.addEventListener('change', async () => {
+      const newOpen = restStatusToggle.checked;
+      restStatusLabel.textContent = newOpen ? 'Restaurant: ON' : 'Restaurant: OFF';
+
+      try {
+        await setAllItemsAvailability(newOpen);
+      } catch (e) {
+        restStatusToggle.checked = !newOpen;
+        restStatusLabel.textContent = !newOpen ? 'Restaurant: ON' : 'Restaurant: OFF';
+      }
+    });
 
     // ---------- INIT ----------
     window.addEventListener('DOMContentLoaded', () => {
