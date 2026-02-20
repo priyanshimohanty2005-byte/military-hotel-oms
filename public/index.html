@@ -215,7 +215,7 @@ select{
 }
 
 /* INPUTS */
-input,select#orderType{
+input,select#orderType,select#address{
   width:100%;
   padding:10px;
   border-radius:10px;
@@ -282,9 +282,11 @@ input,select#orderType{
     <div id="cartItems"></div>
     <b>Total: ₹<span id="total">0</span></b>
 
-    <!-- ONLY DELIVERY OPTION -->
+    <!-- ORDER TYPE: dine-in / takeaway / delivery -->
     <select id="orderType">
       <option value="">Select Order Type</option>
+      <option value="dinein">Dine-in</option>
+      <option value="takeaway">Takeaway</option>
       <option value="delivery">Delivery</option>
     </select>
 
@@ -292,7 +294,27 @@ input,select#orderType{
     <input id="name" placeholder="Customer Name">
     <input id="mobile" placeholder="Mobile Number">
     <input id="table" placeholder="Table Number" style="display:none">
-    <input id="address" placeholder="Delivery Address">
+
+    <!-- ADDRESS DROPDOWN: BH-1..BH-8, GH-1..GH-8 -->
+    <select id="address">
+      <option value="">Select Block / Hostel</option>
+      <option value="BH-1">BH-1</option>
+      <option value="BH-2">BH-2</option>
+      <option value="BH-3">BH-3</option>
+      <option value="BH-4">BH-4</option>
+      <option value="BH-5">BH-5</option>
+      <option value="BH-6">BH-6</option>
+      <option value="BH-7">BH-7</option>
+      <option value="BH-8">BH-8</option>
+      <option value="GH-1">GH-1</option>
+      <option value="GH-2">GH-2</option>
+      <option value="GH-3">GH-3</option>
+      <option value="GH-4">GH-4</option>
+      <option value="GH-5">GH-5</option>
+      <option value="GH-6">GH-6</option>
+      <option value="GH-7">GH-7</option>
+      <option value="GH-8">GH-8</option>
+    </select>
 
     <button class="primary" id="placeOrderBtn">Pay & Place Order</button>
     <button class="primary" style="margin-top:6px;background:#222;color:#fff;border:1px solid rgba(163,216,52,.5);" onclick="closeCart()">Close</button>
@@ -442,7 +464,6 @@ function build(){
   /* CONTENTS PAGE */
   let contents="",start=2;
   Object.keys(menu).forEach(c=>{
-    // compute pages for this category with same per-category logic
     const items = menu[c];
     const hasImages = items.some(it => it.image);
     const perPage   = hasImages
@@ -467,8 +488,8 @@ function build(){
 
     const hasImages = items.some(it => it.image);
     const perPage   = hasImages
-      ? (window.innerWidth < 500 ? 4 : 6)   // categories with images
-      : (window.innerWidth < 500 ? 6 : 8);  // categories without images
+      ? (window.innerWidth < 500 ? 4 : 6)
+      : (window.innerWidth < 500 ? 6 : 8);
 
     for (let i = 0; i < items.length; i += perPage) {
       let slice = items.slice(i, i + perPage);
@@ -476,7 +497,7 @@ function build(){
       slice.forEach(it => {
         const min = Math.min(...Object.values(it.variants));
         const img = it.image || "";
-        const inStock = it.available !== false; // default ON
+        const inStock = it.available !== false;
 
         let opts = `<option value="">Choose option</option>` +
           Object.entries(it.variants)
@@ -619,7 +640,11 @@ placeOrderBtn.onclick = async () => {
   if(!nameInput.value.trim())return alert("Enter name");
   if(!mobileInput.value.trim())return alert("Enter mobile");
   if(!orderType.value)return alert("Select order type");
-  if(!addressInput.value.trim())return alert("Enter delivery address");
+
+  // address required only for delivery
+  if(orderType.value === "delivery" && !addressInput.value){
+    return alert("Select your block/hostel");
+  }
 
   const totalAmount = cart.reduce((s,i)=>s + i.qty*i.price,0);
 
@@ -662,7 +687,7 @@ placeOrderBtn.onclick = async () => {
                 registrationNumber:regInput.value.trim(),
                 mobile:mobileInput.value.trim(),
                 tableNumber:"",
-                address:addressInput.value.trim(),
+                address:addressInput.value || "",
                 items:cart
               }
             })
