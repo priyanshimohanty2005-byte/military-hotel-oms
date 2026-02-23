@@ -170,7 +170,7 @@
       <div>
         <h1 class="text-2xl md:text-4xl font-extrabold text-amber-300">Military Hotel — Manager</h1>
         <p class="text-[11px] md:text-xs text-gray-400">
-          Contact: <b>+91-XXXXXXXXXX</b> • Live orders, dashboards, Bluetooth print
+          Contact: <b>+91-XXXXXXXXXX</b> • Live orders, dashboards, Bluetooth &amp; PC print
         </p>
       </div>
       <div class="flex flex-col items-end gap-2">
@@ -191,15 +191,9 @@
 
     <!-- Tabs -->
     <div class="flex gap-2 mb-4">
-      <button id="tabOrders" class="tab-btn tab-btn-active text-xs md:text-sm">
-        Orders
-      </button>
-      <button id="tabAnalytics" class="tab-btn text-xs md:text-sm">
-        Analytics &amp; Insights
-      </button>
-      <button id="tabInventory" class="tab-btn text-xs md:text-sm">
-        Inventory
-      </button>
+      <button id="tabOrders"   class="tab-btn tab-btn-active text-xs md:text-sm">Orders</button>
+      <button id="tabAnalytics" class="tab-btn text-xs md:text-sm">Analytics &amp; Insights</button>
+      <button id="tabInventory" class="tab-btn text-xs md:text-sm">Inventory</button>
     </div>
 
     <!-- ANALYTICS -->
@@ -516,7 +510,7 @@
 
     const tabOrders = document.getElementById('tabOrders');
     const tabAnalytics = document.getElementById('tabAnalytics');
-    const tabInventory = document.getElementById('tabInventory');
+       const tabInventory = document.getElementById('tabInventory');
     const ordersSection = document.getElementById('ordersSection');
     const analyticsSection = document.getElementById('analyticsSection');
     const inventorySection = document.getElementById('inventorySection');
@@ -617,7 +611,14 @@
             ` : `
               <button class="card-btn px-3 py-1 text-xs bg-red-600 rounded-full" onclick="deleteOrder('${o._id}')">Delete</button>
             `}
-            <button class="card-btn px-3 py-1 text-xs bg-slate-900 text-yellow-100 rounded-full" onclick="printSlip('${o._id}')">Bluetooth Print</button>
+            <button class="card-btn px-3 py-1 text-xs bg-slate-900 text-yellow-100 rounded-full"
+                    onclick="printSlip('${o._id}')">
+              Bluetooth Print
+            </button>
+            <button class="card-btn px-3 py-1 text-xs bg-white text-gray-900 rounded-full"
+                    onclick="printOnPc('${o._id}')">
+              Print (PC / Laptop)
+            </button>
           </div>
         </div>
       `;
@@ -644,37 +645,37 @@
     }
 
     const LINE_WIDTH = 30;
-    function line(ch='-'){ return ch.repeat(LINE_WIDTH) + '\n'; }
+    function line(ch='-'){ return ch.repeat(LINE_WIDTH) + '\\n'; }
 
     function buildReceipt(order){
       let out = '';
-      out += 'MILITARY HOTEL\n';
+      out += 'MILITARY HOTEL\\n';
       out += line('-');
-      out += `Order Type: ${String(order.orderType || '').toUpperCase()}\n`;
-      out += `Customer: ${order.customerName || '-'}\n`;
-      out += `Reg No: ${order.registrationNumber || '-'}\n`;
+      out += `Order Type: ${String(order.orderType || '').toUpperCase()}\\n`;
+      out += `Customer: ${order.customerName || '-'}\\n`;
+      out += `Reg No: ${order.registrationNumber || '-'}\\n`;
       if (order.mobile) {
-        out += `Mobile: ${order.mobile}\n`;
+        out += `Mobile: ${order.mobile}\\n`;
       }
       if(order.orderType==='dinein'){
-        out += `Table: ${order.tableNumber || '-'}\n`;
+        out += `Table: ${order.tableNumber || '-'}\\n`;
       } else {
-        out += `Address: ${order.address || '-'}\n`;
+        out += `Address: ${order.address || '-'}\\n`;
       }
       out += line('-');
-      out += 'Items\n';
+      out += 'Items\\n';
       out += line('-');
 
       (order.items || []).forEach(i=>{
         const lineName = `${i.qty||0}x ${i.name || ''}`.slice(0,20);
         const lineAmt  = String((i.price||0)*(i.qty||0)).padStart(6,' ');
-        out += `${lineName.padEnd(22,' ')}${lineAmt}\n`;
+        out += `${lineName.padEnd(22,' ')}${lineAmt}\\n`;
       });
 
       out += line('-');
-      out += `Total: ₹${order.total || 0}\n`;
+      out += `Total: ₹${order.total || 0}\\n`;
       out += line('-');
-      out += 'Thank you!\n';
+      out += 'Thank you!\\n';
       return out;
     }
 
@@ -685,6 +686,7 @@
       return orders.find(o=>o._id===id);
     }
 
+    // Bluetooth / RawBT
     async function printSlip(id){
       const order = await fetchOrderById(id);
       if(!order){
@@ -698,6 +700,77 @@
       } catch (e) {
         alert('Bluetooth print failed: ' + (e.message || e));
       }
+    }
+
+    // PC / Laptop printer
+    async function printOnPc(id){
+      const order = await fetchOrderById(id);
+      if (!order) {
+        alert('Order not found');
+        return;
+      }
+
+      const itemsHtml = (order.items || []).map(it => `
+        <tr>
+          <td style="padding:4px 8px;border-bottom:1px solid #ddd;">${it.qty || 0} × ${it.name || ''}</td>
+          <td style="padding:4px 8px;border-bottom:1px solid #ddd;text-align:right;">
+            ₹${(it.price || 0) * (it.qty || 0)}
+          </td>
+        </tr>
+      `).join('');
+
+      const html = `
+        <html>
+        <head>
+          <title>Bill - Military Hotel</title>
+          <style>
+            body{ font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+            .bill-box{
+              max-width:320px;
+              margin:0 auto;
+              font-size:12px;
+            }
+            h2{
+              text-align:center;
+              margin:4px 0 6px;
+            }
+            table{ width:100%; border-collapse:collapse; }
+          </style>
+        </head>
+        <body onload="window.print();">
+          <div class="bill-box">
+            <h2>Military Hotel</h2>
+            <div>Order Type: ${(order.orderType || '').toUpperCase()}</div>
+            <div>Customer: ${order.customerName || '-'}</div>
+            <div>Reg No: ${order.registrationNumber || '-'}</div>
+            ${order.mobile ? `<div>Mobile: ${order.mobile}</div>` : ''}
+            ${order.orderType === 'dinein'
+              ? `<div>Table: ${order.tableNumber || '-'}</div>`
+              : `<div>Address: ${order.address || '-'}</div>`}
+            <div>Date: ${new Date(order.createdAt).toLocaleString()}</div>
+            <hr>
+            <table>
+              <tbody>
+                ${itemsHtml}
+              </tbody>
+            </table>
+            <hr>
+            <div style="text-align:right;font-weight:bold;">
+              Total: ₹${order.total || 0}
+            </div>
+            <div style="text-align:center;margin-top:6px;">Thank you!</div>
+          </div>
+        </body>
+        </html>
+      `;
+      const win = window.open('', '_blank', 'width=400,height=600');
+      if (!win) {
+        alert('Popup blocked. Allow popups for this site to print.');
+        return;
+      }
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
     }
 
     const dashboardPeriod = document.getElementById('dashboardPeriod');
