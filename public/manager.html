@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Military Hotel — Manager Portal</title>
+  <title>Abba SEENUUU... FAST FOODS — Manager Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Tailwind CDN -->
@@ -168,7 +168,9 @@
   <div id="managerApp" class="max-w-7xl mx-auto p-6" style="display:none;">
     <header class="flex justify-between items-center mb-4 gap-2">
       <div>
-        <h1 class="text-2xl md:text-4xl font-extrabold text-amber-300">Military Hotel — Manager</h1>
+        <h1 class="text-2xl md:text-4xl font-extrabold text-amber-300">
+          Abba SEENUUU... FAST FOODS — Manager
+        </h1>
         <p class="text-[11px] md:text-xs text-gray-400">
           Contact: <b>+91-XXXXXXXXXX</b> • Live orders, dashboards, Bluetooth &amp; PC print
         </p>
@@ -196,160 +198,166 @@
       <button id="tabInventory" class="tab-btn text-xs md:text-sm">Inventory</button>
     </div>
 
-    <!-- ANALYTICS -->
-    <div id="analyticsSection" class="hidden space-y-6">
-      <section id="dashboard" class="bg-white rounded-xl p-4 md:p-6 shadow-xl border border-gray-200 text-gray-900">
-        <div class="flex flex-wrap-row justify-between items-center gap-3 mb-4">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="dashboard-label">View</span>
+    <!-- ORDERS TAB -->
+    <div id="ordersTab">
+      <div class="bg-slate-900/70 rounded-2xl border border-slate-700 p-4 mb-4">
+        <div class="flex justify-between items-center gap-3 flex-wrap orders-date-row">
+          <div class="flex items-center gap-2">
+            <span class="dashboard-label">Orders for</span>
+            <input id="datePicker" type="date"
+              class="bg-slate-800 border border-amber-400 rounded-full px-3 py-1.5 text-xs md:text-sm" />
+          </div>
+          <div class="text-[11px] md:text-xs text-gray-400">
+            Showing orders for selected date. Auto-refreshes on every new order.
+          </div>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4">
+        <!-- Incoming / Preparing / Out for Delivery -->
+        <div class="bg-slate-900/70 rounded-2xl border border-slate-700 p-4">
+          <h2 class="text-sm md:text-base font-bold mb-3 flex items-center gap-2">
+            <span class="inline-flex w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Live Orders
+          </h2>
+          <div id="ordersList" class="space-y-3 text-sm max-h-[70vh] overflow-y-auto pr-1"></div>
+        </div>
+
+        <!-- Delivered / History -->
+        <div class="bg-slate-900/70 rounded-2xl border border-slate-700 p-4">
+          <h2 class="text-sm md:text-base font-bold mb-3 flex items-center gap-2">
+            Order History
+          </h2>
+          <div id="historyList" class="space-y-3 text-sm max-h-[70vh] overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS TAB -->
+    <div id="analyticsTab" style="display:none;">
+      <section class="bg-slate-900/70 rounded-2xl border border-slate-700 p-4 md:p-6 mb-4">
+        <h2 class="text-lg md:text-xl font-extrabold text-amber-300 mb-3">
+          Daily Snapshot
+        </h2>
+        <div class="flex flex-wrap items-center gap-3 mb-4 flex-wrap-row">
+          <div class="flex items-center">
+            <span class="dashboard-label">Summary for</span>
+            <input id="dashboardDate" type="date" class="insight-input" />
+          </div>
+          <div class="flex items-center">
+            <span class="dashboard-label">Period</span>
             <select id="dashboardPeriod" class="insight-select">
               <option value="day">Day</option>
               <option value="week">Week</option>
               <option value="month">Month</option>
             </select>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="dashboard-label">Base Date</span>
-            <input id="dashboardDate" type="date" class="insight-input font-extrabold" />
-          </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-2">
-          <div class="bg-amber-50 border border-yellow-200 rounded-lg px-3 py-3 text-center">
-            <div class="text-base md:text-lg font-bold text-amber-700" id="sales-today">₹0</div>
-            <div class="text-[11px] mt-1 text-gray-700">Sales</div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="bg-amber-100 rounded-xl p-3 shadow text-slate-900">
+            <div class="text-xs font-semibold text-amber-700 uppercase mb-1">Total Sales (₹)</div>
+            <div id="sales-today" class="text-2xl font-extrabold">₹0</div>
           </div>
-          <div class="bg-green-50 border border-green-200 rounded-lg px-3 py-3 text-center">
-            <div class="text-base md:text-lg font-bold text-green-700" id="orders-month">0</div>
-            <div class="text-[11px] mt-1 text-gray-700">Orders</div>
+          <div class="bg-amber-100 rounded-xl p-3 shadow text-slate-900">
+            <div class="text-xs font-semibold text-amber-700 uppercase mb-1">Total Orders</div>
+            <div id="orders-month" class="text-2xl font-extrabold">0</div>
           </div>
-          <div class="bg-blue-50 border border-blue-200 rounded-lg px-3 py-3 text-center">
-            <div class="text-base md:text-lg font-bold text-blue-700" id="peak-hour">-</div>
-            <div class="text-[11px] mt-1 text-gray-700">Peak Hour</div>
-          </div>
-          <div class="bg-red-50 border border-red-200 rounded-lg px-3 py-3 text-center">
-            <div class="text-base md:text-lg font-bold text-red-700" id="top-dish">-</div>
-            <div class="text-[11px] mt-1 text-gray-700">Most Ordered</div>
+          <div class="bg-amber-100 rounded-xl p-3 shadow text-slate-900">
+            <div class="text-xs font-semibold text-amber-700 uppercase mb-1">Peak Hour</div>
+            <div id="peak-hour" class="text-2xl font-extrabold">-</div>
           </div>
         </div>
       </section>
 
-      <section class="bg-white border-4 border-yellow-500 shadow-lg rounded-xl py-6 px-4 md:py-8 md:px-6 text-gray-900">
-        <h3 class="text-lg md:text-2xl font-extrabold text-yellow-800 mb-4 md:mb-6 tracking-wide">
-          📊 Detailed Insights &amp; Comparison
-        </h3>
+      <section class="bg-slate-900/70 rounded-2xl border border-slate-700 p-4 md:p-6">
+        <h2 class="text-lg md:text-xl font-extrabold text-amber-300 mb-3">
+          Smart Insights
+        </h2>
 
-        <form class="flex flex-wrap gap-3 md:gap-5 items-center mb-3 text-sm">
-          <div class="flex flex-col gap-1">
-            <label class="insight-label">Insight</label>
-            <select id="insightType" class="insight-select w-full">
-              <option value="compare_sales">Sales Comparison</option>
-              <option value="repeat_customers">Repeat Customers (in period)</option>
-              <option value="best_dish">Most Ordered Dish (period)</option>
-              <option value="customer_search">Look-up Customer Visits (by name)</option>
+        <div class="flex flex-wrap gap-3 mb-3 flex-wrap-row">
+          <div>
+            <div class="insight-label mb-1">Insight Type</div>
+            <select id="insightType" class="insight-select">
+              <option value="">Choose insight</option>
+              <option value="compare_sales">Compare Sales</option>
+              <option value="repeat_customers">Repeat Customers</option>
+              <option value="best_dish">Best Dish</option>
+              <option value="customer_search">Customer Visits</option>
             </select>
           </div>
 
-          <div id="compareByLabel" style="display:none;" class="flex flex-col gap-1">
-            <label class="insight-label">Compare by</label>
-            <select id="compareBy" class="insight-select w-full">
+          <div>
+            <div class="insight-label mb-1">From</div>
+            <input id="insightFrom" type="date" class="insight-input" />
+          </div>
+
+          <div>
+            <div class="insight-label mb-1">To</div>
+            <input id="insightTo" type="date" class="insight-input" />
+          </div>
+
+          <div id="compareByLabel" style="display:none;">
+            <div class="insight-label mb-1">Compare By</div>
+            <select id="compareBy" class="insight-select">
               <option value="day">Day</option>
               <option value="week">Week</option>
               <option value="month">Month</option>
             </select>
           </div>
 
-          <div class="flex flex-col gap-1">
-            <label class="insight-label">First Date</label>
-            <input type="date" id="insightFrom" class="insight-input w-full font-extrabold"/>
+          <div>
+            <div class="insight-label mb-1">Customer Name</div>
+            <input id="insightName" class="insight-input" placeholder="For customer search" style="display:none;" />
           </div>
 
-          <div class="flex flex-col gap-1">
-            <label class="insight-label">Second Date</label>
-            <input type="date" id="insightTo" class="insight-input w-full font-extrabold"/>
+          <div class="flex items-end">
+            <button onclick="runInsight()"
+              class="px-4 py-2 rounded-full bg-amber-400 text-black font-semibold text-xs md:text-sm">
+              Run Insight
+            </button>
           </div>
+        </div>
 
-          <div class="flex flex-col gap-1 w-full md:w-auto">
-            <input id="insightName" class="insight-input w-full" style="display:none;" placeholder="Customer Name" />
-          </div>
-
-          <button type="button"
-            class="bg-yellow-400 hover:bg-yellow-500 text-black font-extrabold rounded-full px-4 py-2 ml-1 shadow-md text-sm"
-            onclick="runInsight()">
-            Show
-          </button>
-        </form>
-
-        <div id="insightResult" class="insight-box text-sm"></div>
+        <div id="insightResult" class="insight-box">
+          Choose an insight and date range to see details.
+        </div>
       </section>
     </div>
 
-    <!-- ORDERS -->
-    <div id="ordersSection" class="space-y-4 mt-4">
-      <div class="bg-gray-800 rounded-2xl p-3 md:p-4 flex orders-date-row md:flex-row md:justify-between md:items-center gap-3">
-        <div class="flex items-center gap-2">
-          <label class="text-xs md:text-sm text-yellow-300 font-extrabold tracking-wide uppercase">
-            Orders Date
-          </label>
-          <input
-            id="datePicker"
-            type="date"
-            class="bg-yellow-100 border-2 border-yellow-400 px-3 py-1.5 text-xs md:text-sm font-extrabold rounded w-full md:w-auto text-yellow-900 shadow-sm"
-          />
-        </div>
-        <div class="flex flex-col text-right gap-1 text-xs md:text-sm w-full md:w-auto">
-          <div class="text-gray-200 font-semibold">
-            Selected: <span id="selectedDateText" class="text-amber-300 font-extrabold"></span>
-          </div>
-          <div class="text-gray-400">Total Orders: <span id="totalOrders" class="font-bold text-amber-300">0</span></div>
-          <div class="text-gray-400">Revenue: ₹<span id="totalRevenue" class="font-bold text-green-300">0</span></div>
-          <div class="flex flex-wrap justify-end gap-2 mt-1">
-            <span class="order-type-badge order-type-dinein">Dine-in: <span id="countDinein">0</span></span>
-            <span class="order-type-badge order-type-takeaway">Takeaway: <span id="countTakeaway">0</span></span>
-            <span class="order-type-badge order-type-delivery">Delivery: <span id="countDelivery">0</span></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
-        <section>
-          <h2 class="text-base md:text-xl font-semibold text-yellow-200 mb-2 md:mb-3">🟡 Upcoming / Incoming Orders</h2>
-          <div id="incoming" class="space-y-3"></div>
-        </section>
-        <section>
-          <h2 class="text-base md:text-xl font-semibold text-green-300 mb-2 md:mb-3">🟢 Delivered Orders</h2>
-          <div id="delivered" class="space-y-3"></div>
-        </section>
-      </div>
-    </div>
-
-    <!-- INVENTORY -->
-    <div id="inventorySection" class="hidden mt-4 space-y-3">
-      <section class="bg-gray-900 border border-yellow-400 rounded-2xl p-4">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-base md:text-xl font-semibold text-amber-300">
-            📦 Inventory — Show / Hide Items
-          </h2>
-          <button id="saveInventoryBtn"
-            class="bg-amber-400 hover:bg-amber-500 text-black font-semibold rounded-full px-4 py-1.5 text-xs md:text-sm">
-            Save changes
-          </button>
-        </div>
-        <p class="text-xs md:text-sm text-gray-300 mb-2">
-          Toggle the switch to mark an item as <span class="font-semibold text-green-300">Available (ON)</span> or
-          <span class="font-semibold text-red-300">Sold Out (OFF)</span>. Customer menu will update automatically.
+    <!-- INVENTORY TAB -->
+    <div id="inventoryTab" style="display:none;">
+      <section class="bg-slate-900/70 rounded-2xl border border-slate-700 p-4 md:p-6">
+        <h2 class="text-lg md:text-xl font-extrabold text-amber-300 mb-3">
+          Inventory &amp; Menu Availability
+        </h2>
+        <p class="text-xs md:text-sm text-gray-300 mb-3">
+          Quickly switch items ON/OFF for the Abba SEENUUU... FAST FOODS online menu. Changes are saved to <b>menu.json</b> on the server.
         </p>
-        <div id="inventoryTableWrapper" class="table-wrapper mt-3">
-          <table class="min-w-full text-xs md:text-sm">
+
+        <div id="inventoryStatus" class="text-xs text-emerald-400 mb-2 hidden">
+          Menu updated successfully.
+        </div>
+
+        <div class="table-wrapper">
+          <table class="w-full text-xs md:text-sm">
             <thead>
-              <tr class="bg-gray-800 text-gray-200">
-                <th class="px-3 py-2 text-left">Category</th>
-                <th class="px-3 py-2 text-left">Item</th>
-                <th class="px-3 py-2 text-center">Available</th>
+              <tr class="border-b border-amber-400 text-amber-200">
+                <th class="text-left py-2">Category</th>
+                <th class="text-left py-2">Item</th>
+                <th class="text-left py-2">Variants</th>
+                <th class="text-center py-2">Available</th>
               </tr>
             </thead>
-            <tbody id="inventoryTableBody" class="bg-gray-900 divide-y divide-gray-700"></tbody>
+            <tbody id="inventoryTableBody" class="text-gray-100"></tbody>
           </table>
+        </div>
+
+        <div class="mt-4 flex justify-end">
+          <button id="saveInventoryBtn"
+            class="px-4 py-2 rounded-full bg-emerald-500 text-black font-semibold text-xs md:text-sm">
+            Save Changes
+          </button>
         </div>
       </section>
     </div>
@@ -357,440 +365,351 @@
 
   <!-- CHANGE LOGIN MODAL -->
   <div id="changeLoginModal"
-       class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
-    <div class="bg-slate-900 border border-amber-400 rounded-2xl px-6 py-5 w-80">
-      <h2 class="text-lg font-extrabold text-amber-300 mb-3 text-center">
-        Change Manager Login
-      </h2>
-
-      <label class="block text-xs text-gray-300 mb-1">Current Username</label>
+    class="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+    style="display:none;">
+    <div class="bg-slate-900 rounded-2xl border border-amber-400 p-5 w-80">
+      <h2 class="text-lg font-extrabold text-amber-300 mb-2 text-center">Change Manager Login</h2>
+      <p class="text-[11px] text-gray-400 mb-3 text-center">
+        Enter current and new credentials for Abba SEENUUU... FAST FOODS manager portal.
+      </p>
+      <label class="block text-xs font-semibold text-gray-200 mb-1">Current Username</label>
       <input id="curUser" class="w-full mb-2 px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-sm" />
 
-      <label class="block text-xs text-gray-300 mb-1">Current Password</label>
-      <input id="curPass" type="password" class="w-full mb-3 px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-sm" />
+      <label class="block text-xs font-semibold text-gray-200 mb-1">Current Password</label>
+      <input id="curPass" type="password" class="w-full mb-2 px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-sm" />
 
-      <label class="block text-xs text-gray-300 mb-1">New Username</label>
+      <label class="block text-xs font-semibold text-gray-200 mb-1">New Username</label>
       <input id="newUser" class="w-full mb-2 px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-sm" />
 
-      <label class="block text-xs text-gray-300 mb-1">New Password</label>
+      <label class="block text-xs font-semibold text-gray-200 mb-1">New Password</label>
       <input id="newPass" type="password" class="w-full mb-3 px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-sm" />
 
-      <div id="changeLoginError" class="text-[11px] text-red-400 mb-2 hidden"></div>
-
       <div class="flex gap-2">
-        <button id="saveChangeLogin"
-          class="flex-1 bg-amber-400 hover:bg-amber-500 text-black font-semibold rounded-full py-2 text-sm">
+        <button id="saveLoginChange"
+          class="flex-1 bg-amber-400 hover:bg-amber-500 text-black font-semibold rounded-full py-2 text-xs">
           Save
         </button>
-        <button id="cancelChangeLogin"
-          class="flex-1 bg-gray-700 text-gray-200 rounded-full py-2 text-sm">
+        <button id="cancelLoginChange"
+          class="flex-1 bg-slate-700 text-gray-100 rounded-full py-2 text-xs">
           Cancel
         </button>
       </div>
+
+      <div id="changeLoginMsg" class="text-[11px] mt-2 text-center text-red-400 hidden"></div>
     </div>
   </div>
 
   <script>
-    // ---- LOGIN via backend ----
-    const loginOverlay = document.getElementById('loginOverlay');
-    const managerApp   = document.getElementById('managerApp');
-    const loginBtn     = document.getElementById('loginBtn');
-    const loginUserEl  = document.getElementById('loginUser');
-    const loginPassEl  = document.getElementById('loginPass');
-    const loginError   = document.getElementById('loginError');
-
-    loginBtn.onclick = async () => {
-      const username = loginUserEl.value.trim();
-      const password = loginPassEl.value.trim();
-      if (!username || !password) {
-        loginError.textContent = "Enter both username and password.";
-        loginError.classList.remove("hidden");
-        return;
-      }
-      try {
-        const res = await fetch("/api/manager/login", {
-          method: "POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify({ username, password })
-        });
-        const data = await res.json();
-        if (!res.ok || !data.success) {
-          loginError.textContent = data.message || "Wrong username or password.";
-          loginError.classList.remove("hidden");
-          return;
-        }
-        loginError.classList.add("hidden");
-        loginOverlay.style.display = "none";
-        managerApp.style.display   = "block";
-      } catch (e) {
-        loginError.textContent = "Server error. Try again.";
-        loginError.classList.remove("hidden");
-      }
-    };
-    loginPassEl.addEventListener('keypress', e => { if (e.key === 'Enter') loginBtn.click(); });
-
-    // ---- CHANGE LOGIN MODAL ----
-    const changeLoginModal     = document.getElementById("changeLoginModal");
-    const openChangeLoginBtn   = document.getElementById("openChangeLogin");
-    const cancelChangeLoginBtn = document.getElementById("cancelChangeLogin");
-    const saveChangeLoginBtn   = document.getElementById("saveChangeLogin");
-    const curUserEl            = document.getElementById("curUser");
-    const curPassEl            = document.getElementById("curPass");
-    const newUserEl            = document.getElementById("newUser");
-    const newPassEl            = document.getElementById("newPass");
-    const changeLoginError     = document.getElementById("changeLoginError");
-
-    openChangeLoginBtn.onclick = () => {
-      curUserEl.value = "";
-      curPassEl.value = "";
-      newUserEl.value = "";
-      newPassEl.value = "";
-      changeLoginError.classList.add("hidden");
-      changeLoginModal.classList.remove("hidden");
-      changeLoginModal.classList.add("flex");
-    };
-
-    cancelChangeLoginBtn.onclick = () => {
-      changeLoginModal.classList.add("hidden");
-      changeLoginModal.classList.remove("flex");
-    };
-
-    saveChangeLoginBtn.onclick = async () => {
-      const currentUser     = curUserEl.value.trim();
-      const currentPassword = curPassEl.value.trim();
-      const newUser         = newUserEl.value.trim();
-      const newPassword     = newPassEl.value.trim();
-
-      if (!currentUser || !currentPassword || !newUser || !newPassword) {
-        changeLoginError.textContent = "Fill all fields.";
-        changeLoginError.classList.remove("hidden");
-        return;
-      }
-
-      try {
-        const res = await fetch("/api/manager/change-credentials", {
-          method: "POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify({ currentUser, currentPassword, newUser, newPassword })
-        });
-        const data = await res.json();
-        if (!res.ok || !data.success) {
-          changeLoginError.textContent = data.message || "Could not update. Check current login.";
-          changeLoginError.classList.remove("hidden");
-          return;
-        }
-        alert("Login updated. Please login again with new ID and password.");
-        changeLoginModal.classList.add("hidden");
-        changeLoginModal.classList.remove("flex");
-
-        managerApp.style.display   = "none";
-        loginOverlay.style.display = "flex";
-        loginUserEl.value = "";
-        loginPassEl.value = "";
-      } catch (e) {
-        changeLoginError.textContent = "Server error. Try again.";
-        changeLoginError.classList.remove("hidden");
-      }
-    };
-
-    // ======= ORIGINAL MANAGER LOGIC =======
     const socket = io();
 
-    function getLocalToday() {
+    // LOGIN
+    const loginOverlay = document.getElementById("loginOverlay");
+    const managerApp = document.getElementById("managerApp");
+    const loginBtn = document.getElementById("loginBtn");
+    const loginUser = document.getElementById("loginUser");
+    const loginPass = document.getElementById("loginPass");
+    const loginError = document.getElementById("loginError");
+
+    loginBtn.onclick = async () => {
+      const username = loginUser.value.trim();
+      const password = loginPass.value.trim();
+      loginError.classList.add("hidden");
+
+      if(!username || !password){
+        loginError.textContent = "Enter username and password.";
+        loginError.classList.remove("hidden");
+        return;
+      }
+
+      try{
+        const res = await fetch("/api/manager/login",{
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body:JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if(data.success){
+          loginOverlay.style.display = "none";
+          managerApp.style.display = "block";
+          fetchOrders(getLocalToday());
+          renderDashboard();
+          loadInventory();
+        }else{
+          loginError.textContent = data.message || "Wrong username or password.";
+          loginError.classList.remove("hidden");
+        }
+      }catch(e){
+        console.error(e);
+        loginError.textContent = "Server error.";
+        loginError.classList.remove("hidden");
+      }
+    };
+
+    // CHANGE LOGIN MODAL
+    const openChangeLogin = document.getElementById("openChangeLogin");
+    const changeLoginModal = document.getElementById("changeLoginModal");
+    const saveLoginChange = document.getElementById("saveLoginChange");
+    const cancelLoginChange = document.getElementById("cancelLoginChange");
+    const curUser = document.getElementById("curUser");
+    const curPass = document.getElementById("curPass");
+    const newUser = document.getElementById("newUser");
+    const newPass = document.getElementById("newPass");
+    const changeLoginMsg = document.getElementById("changeLoginMsg");
+
+    openChangeLogin.onclick = () => {
+      changeLoginMsg.classList.add("hidden");
+      curUser.value = "";
+      curPass.value = "";
+      newUser.value = "";
+      newPass.value = "";
+      changeLoginModal.style.display = "flex";
+    };
+    cancelLoginChange.onclick = () => {
+      changeLoginModal.style.display = "none";
+    };
+    saveLoginChange.onclick = async () => {
+      changeLoginMsg.classList.add("hidden");
+      try{
+        const res = await fetch("/api/manager/change-credentials",{
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body:JSON.stringify({
+            currentUser: curUser.value.trim(),
+            currentPassword: curPass.value.trim(),
+            newUser: newUser.value.trim(),
+            newPassword: newPass.value.trim()
+          })
+        });
+        const data = await res.json();
+        if(data.success){
+          changeLoginMsg.textContent = "Login updated successfully.";
+          changeLoginMsg.classList.remove("hidden");
+          changeLoginMsg.classList.remove("text-red-400");
+          changeLoginMsg.classList.add("text-emerald-400");
+          setTimeout(()=>{ changeLoginModal.style.display="none"; }, 1200);
+        }else{
+          changeLoginMsg.textContent = data.message || "Could not update login.";
+          changeLoginMsg.classList.remove("hidden");
+          changeLoginMsg.classList.remove("text-emerald-400");
+          changeLoginMsg.classList.add("text-red-400");
+        }
+      }catch(e){
+        console.error(e);
+        changeLoginMsg.textContent = "Server error.";
+        changeLoginMsg.classList.remove("hidden");
+        changeLoginMsg.classList.add("text-red-400");
+      }
+    };
+
+    // Restaurant ON/OFF (local only toggle now)
+    const restStatusToggle = document.getElementById("restStatusToggle");
+    const restStatusLabel  = document.getElementById("restStatusLabel");
+    restStatusToggle.onchange = () => {
+      restStatusLabel.textContent = restStatusToggle.checked
+        ? "Restaurant: ON"
+        : "Restaurant: OFF (online ordering disabled manually)";
+    };
+
+    // Tabs
+    const tabOrders    = document.getElementById("tabOrders");
+    const tabAnalytics = document.getElementById("tabAnalytics");
+    const tabInventory = document.getElementById("tabInventory");
+    const ordersTab    = document.getElementById("ordersTab");
+    const analyticsTab = document.getElementById("analyticsTab");
+    const inventoryTab = document.getElementById("inventoryTab");
+
+    function setActiveTab(which){
+      [tabOrders,tabAnalytics,tabInventory].forEach(b=>b.classList.remove("tab-btn-active"));
+      [ordersTab,analyticsTab,inventoryTab].forEach(d=>d.style.display="none");
+      if(which==="orders"){ tabOrders.classList.add("tab-btn-active"); ordersTab.style.display="block"; }
+      if(which==="analytics"){ tabAnalytics.classList.add("tab-btn-active"); analyticsTab.style.display="block"; }
+      if(which==="inventory"){ tabInventory.classList.add("tab-btn-active"); inventoryTab.style.display="block"; }
+    }
+    tabOrders.onclick    = ()=>setActiveTab("orders");
+    tabAnalytics.onclick = ()=>setActiveTab("analytics");
+    tabInventory.onclick = ()=>setActiveTab("inventory");
+
+    // Date helpers
+    function getLocalToday(){
       const d = new Date();
-      const tzOffset = d.getTimezoneOffset() * 60000;
-      return new Date(d.getTime() - tzOffset).toISOString().slice(0,10);
+      const off = d.getTimezoneOffset();
+      const ist = new Date(d.getTime() + (330 + off)*60000);
+      return ist.toISOString().slice(0,10);
     }
 
-    const datePicker = document.getElementById('datePicker');
-    const selectedDateText = document.getElementById('selectedDateText');
-
+    const datePicker = document.getElementById("datePicker");
     datePicker.value = getLocalToday();
-    selectedDateText.textContent = datePicker.value;
 
-    const tabOrders = document.getElementById('tabOrders');
-    const tabAnalytics = document.getElementById('tabAnalytics');
-       const tabInventory = document.getElementById('tabInventory');
-    const ordersSection = document.getElementById('ordersSection');
-    const analyticsSection = document.getElementById('analyticsSection');
-    const inventorySection = document.getElementById('inventorySection');
+    const ordersList  = document.getElementById("ordersList");
+    const historyList = document.getElementById("historyList");
 
-    function setTab(active) {
-      if (active === 'orders') {
-        ordersSection.classList.remove('hidden');
-        analyticsSection.classList.add('hidden');
-        inventorySection.classList.add('hidden');
-        tabOrders.classList.add('tab-btn-active');
-        tabAnalytics.classList.remove('tab-btn-active');
-        tabInventory.classList.remove('tab-btn-active');
-      } else if (active === 'analytics') {
-        analyticsSection.classList.remove('hidden');
-        ordersSection.classList.add('hidden');
-        inventorySection.classList.add('hidden');
-        tabAnalytics.classList.add('tab-btn-active');
-        tabOrders.classList.remove('tab-btn-active');
-        tabInventory.classList.remove('tab-btn-active');
-      } else if (active === 'inventory') {
-        inventorySection.classList.remove('hidden');
-        ordersSection.classList.add('hidden');
-        analyticsSection.classList.add('hidden');
-        tabInventory.classList.add('tab-btn-active');
-        tabOrders.classList.remove('tab-btn-active');
-        tabAnalytics.classList.remove('tab-btn-active');
-        loadInventory();
-      }
-    }
-    tabOrders.onclick = () => setTab('orders');
-    tabAnalytics.onclick = () => setTab('analytics');
-    tabInventory.onclick = () => setTab('inventory');
-
-    async function fetchOrders(date) {
-      const res = await fetch('/api/orders?date=' + date);
-      const orders = await res.json();
-      renderOrders(orders);
-    }
-
-    function renderOrders(orders) {
-      const dinein = orders.filter(o => o.orderType === 'dinein');
-      const takeaway = orders.filter(o => o.orderType === 'takeaway');
-      const delivery = orders.filter(o => o.orderType === 'delivery');
-      document.getElementById('totalOrders').innerText = orders.length;
-      document.getElementById('totalRevenue').innerText = orders.reduce((s,o)=>s+(o.total||0),0);
-      document.getElementById('countDinein').innerText = dinein.length;
-      document.getElementById('countTakeaway').innerText = takeaway.length;
-      document.getElementById('countDelivery').innerText = delivery.length;
-
-      const incoming = orders.filter(o =>
-        (o.status || '').trim().toLowerCase() !== 'delivered' &&
-        (o.status || '').trim().toLowerCase() !== 'deleted'
-      );
-      const delivered = orders.filter(o =>
-        (o.status || '').trim().toLowerCase() === 'delivered'
-      );
-
-      document.getElementById('incoming').innerHTML = incoming.length
-        ? incoming.map(o => cardHtml(o, true)).join('')
-        : '<div class="text-yellow-300 font-semibold text-sm md:text-lg py-6 text-center">No upcoming/incoming orders for selected date.</div>';
-      document.getElementById('delivered').innerHTML = delivered.length
-        ? delivered.map(o => cardHtml(o, false)).join('')
-        : '<div class="text-green-200 font-semibold text-sm md:text-lg py-6 text-center">No delivered orders yet.</div>';
-    }
-
+    // Address + GPS line
     function renderOrderDetails(o) {
-      if (o.orderType === 'dinein') return `Table: ${o.tableNumber || '—'}`;
-      else if (o.orderType === 'takeaway' || o.orderType === 'delivery') return `Address: ${o.address || '—'}`;
-      return '';
-    }
-
-    function cardHtml(o, isIncoming) {
-      const regLine = `Reg No: ${o.registrationNumber || '—'} • ${renderOrderDetails(o)}`;
-      return `
-        <div class="bg-${isIncoming ? 'gray-900 border border-amber-400' : 'gray-800 border border-gray-700'} rounded-xl p-3 md:p-4 shadow-sm">
-          <div class="flex justify-between items-start gap-2">
-            <div class="w-2/3">
-              <div class="flex items-center flex-wrap gap-1 mb-1">
-                <span class="order-type-badge order-type-${o.orderType}">${o.orderType.charAt(0).toUpperCase() + o.orderType.slice(1)}</span>
-                <span class="order-card-title">${o.customerName || 'Guest'}</span>
-              </div>
-              <div class="order-card-meta text-gray-400">${new Date(o.createdAt).toLocaleString()}</div>
-              <div class="order-card-meta text-gray-400 mt-0.5">${regLine}</div>
-            </div>
-            <div class="text-right w-1/3">
-              <div class="font-semibold text-sm ${isIncoming ? 'text-amber-200' : 'text-green-300'}">₹${o.total || 0}</div>
-              <div class="order-card-meta text-gray-400 mt-1">${o.mobile ? "📱 " + o.mobile : ""}</div>
-            </div>
-          </div>
-          <ul class="mt-2 order-card-items ${isIncoming ? 'text-gray-200' : 'text-gray-300'} leading-snug">
-            ${(o.items || []).map(it=>`<li>• ${it.qty} × ${it.name || ''} — ₹${it.price || 0}</li>`).join('')}
-          </ul>
-          <div class="mt-3 flex flex-wrap gap-2">
-            ${isIncoming ? `
-              <button class="card-btn px-3 py-1 text-xs bg-blue-600 rounded-full" onclick="updateStatus('${o._id}','preparing')">Preparing</button>
-              <button class="card-btn px-3 py-1 text-xs bg-green-600 rounded-full" onclick="updateStatus('${o._id}','delivered')">Delivered</button>
-              <button class="card-btn px-3 py-1 text-xs bg-red-600 rounded-full" onclick="deleteOrder('${o._id}')">Delete</button>
-            ` : `
-              <button class="card-btn px-3 py-1 text-xs bg-red-600 rounded-full" onclick="deleteOrder('${o._id}')">Delete</button>
-            `}
-            <button class="card-btn px-3 py-1 text-xs bg-slate-900 text-yellow-100 rounded-full"
-                    onclick="printSlip('${o._id}')">
-              Bluetooth Print
-            </button>
-            <button class="card-btn px-3 py-1 text-xs bg-white text-gray-900 rounded-full"
-                    onclick="printOnPc('${o._id}')">
-              Print (PC / Laptop)
-            </button>
-          </div>
-        </div>
-      `;
-    }
-
-    async function updateStatus(id, status) {
-      if (!confirm(`Change order status to "${status}"?`)) return;
-      await fetch('/api/orders/' + id + '/status', {
-        method: 'PATCH',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ status })
-      });
-      fetchOrders(datePicker.value);
-    }
-
-    async function deleteOrder(id) {
-      if (!confirm('Delete this order?')) return;
-      await fetch('/api/orders/' + id + '/status', {
-        method: 'PATCH',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ status: 'deleted' })
-      });
-      fetchOrders(datePicker.value);
-    }
-
-    const LINE_WIDTH = 30;
-    function line(ch='-'){ return ch.repeat(LINE_WIDTH) + '\\n'; }
-
-    function buildReceipt(order){
-      let out = '';
-      out += 'MILITARY HOTEL\\n';
-      out += line('-');
-      out += `Order Type: ${String(order.orderType || '').toUpperCase()}\\n`;
-      out += `Customer: ${order.customerName || '-'}\\n`;
-      out += `Reg No: ${order.registrationNumber || '-'}\\n`;
-      if (order.mobile) {
-        out += `Mobile: ${order.mobile}\\n`;
-      }
-      if(order.orderType==='dinein'){
-        out += `Table: ${order.tableNumber || '-'}\\n`;
+      if (o.orderType === "dinein") {
+        return o.tableNumber
+          ? `<div class="order-card-meta text-gray-300 mt-1">Table: ${o.tableNumber}</div>`
+          : "";
       } else {
-        out += `Address: ${order.address || '-'}\\n`;
-      }
-      out += line('-');
-      out += 'Items\\n';
-      out += line('-');
-
-      (order.items || []).forEach(i=>{
-        const lineName = `${i.qty||0}x ${i.name || ''}`.slice(0,20);
-        const lineAmt  = String((i.price||0)*(i.qty||0)).padStart(6,' ');
-        out += `${lineName.padEnd(22,' ')}${lineAmt}\\n`;
-      });
-
-      out += line('-');
-      out += `Total: ₹${order.total || 0}\\n`;
-      out += line('-');
-      out += 'Thank you!\\n';
-      return out;
-    }
-
-    async function fetchOrderById(id){
-      const date = datePicker.value || getLocalToday();
-      const res  = await fetch(`/api/orders?date=${date}`);
-      const orders = await res.json();
-      return orders.find(o=>o._id===id);
-    }
-
-    // Bluetooth / RawBT
-    async function printSlip(id){
-      const order = await fetchOrderById(id);
-      if(!order){
-        alert('Order not found');
-        return;
-      }
-      const receipt = buildReceipt(order);
-      try {
-        const uri = 'rawbt:' + encodeURIComponent(receipt);
-        window.location.href = uri;
-      } catch (e) {
-        alert('Bluetooth print failed: ' + (e.message || e));
+        if (!o.address && !(o.location && o.location.lat && o.location.lng)) return "";
+        let html = `<div class="order-card-meta text-gray-300 mt-1">📍 ${o.address || "—"}`;
+        if (o.location && o.location.lat && o.location.lng) {
+          html += `<br><span class="text-[11px] text-amber-300">
+            Captured GPS: ${o.location.lat.toFixed(5)}, ${o.location.lng.toFixed(5)}
+          </span>`;
+        }
+        html += `</div>`;
+        return html;
       }
     }
 
-    // PC / Laptop printer
-    async function printOnPc(id){
-      const order = await fetchOrderById(id);
-      if (!order) {
-        alert('Order not found');
-        return;
-      }
+    // Open Google Maps with destination = captured GPS
+    function openMapsForDelivery(lat, lng) {
+      const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+      window.open(url, "_blank");
+    }
 
-      const itemsHtml = (order.items || []).map(it => `
-        <tr>
-          <td style="padding:4px 8px;border-bottom:1px solid #ddd;">${it.qty || 0} × ${it.name || ''}</td>
-          <td style="padding:4px 8px;border-bottom:1px solid #ddd;text-align:right;">
-            ₹${(it.price || 0) * (it.qty || 0)}
-          </td>
-        </tr>
-      `).join('');
+    async function fetchOrders(dateStr){
+      try{
+        const res = await fetch(`/api/orders?date=${dateStr}`);
+        const orders = await res.json();
 
-      const html = `
-        <html>
-        <head>
-          <title>Bill - Military Hotel</title>
-          <style>
-            body{ font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-            .bill-box{
-              max-width:320px;
-              margin:0 auto;
-              font-size:12px;
-            }
-            h2{
-              text-align:center;
-              margin:4px 0 6px;
-            }
-            table{ width:100%; border-collapse:collapse; }
-          </style>
-        </head>
-        <body onload="window.print();">
-          <div class="bill-box">
-            <h2>Military Hotel</h2>
-            <div>Order Type: ${(order.orderType || '').toUpperCase()}</div>
-            <div>Customer: ${order.customerName || '-'}</div>
-            <div>Reg No: ${order.registrationNumber || '-'}</div>
-            ${order.mobile ? `<div>Mobile: ${order.mobile}</div>` : ''}
-            ${order.orderType === 'dinein'
-              ? `<div>Table: ${order.tableNumber || '-'}</div>`
-              : `<div>Address: ${order.address || '-'}</div>`}
-            <div>Date: ${new Date(order.createdAt).toLocaleString()}</div>
-            <hr>
-            <table>
-              <tbody>
-                ${itemsHtml}
-              </tbody>
-            </table>
-            <hr>
-            <div style="text-align:right;font-weight:bold;">
-              Total: ₹${order.total || 0}
+        ordersList.innerHTML = "";
+        historyList.innerHTML = "";
+
+        orders.forEach(o=>{
+          const card = document.createElement("div");
+          card.className = "border border-slate-700 rounded-xl p-3 bg-slate-900/60";
+
+          const typeClass =
+            o.orderType === "dinein"   ? "order-type-dinein" :
+            o.orderType === "takeaway" ? "order-type-takeaway" :
+            "order-type-delivery";
+
+          const itemsText = (o.items||[])
+            .map(i=>`${i.name} (${i.variant}) x${i.qty}`)
+            .join(", ");
+
+          card.innerHTML = `
+            <div class="flex justify-between items-start mb-2 gap-2">
+              <div>
+                <div class="flex items-center mb-1">
+                  <span class="order-type-badge ${typeClass}">
+                    ${o.orderType || ""}
+                  </span>
+                  <span class="order-card-title">
+                    ${o.customerName || "No name"} • ₹${o.total || 0}
+                  </span>
+                </div>
+                <div class="order-card-meta text-gray-400">
+                  ${o.mobile ? `📞 ${o.mobile} • ` : ""}${o.registrationNumber || ""} ${o.tableNumber ? `• Table ${o.tableNumber}` : ""}
+                </div>
+                ${renderOrderDetails(o)}
+              </div>
+              <div class="text-right text-[11px] text-gray-400">
+                ${new Date(o.createdAt).toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})}<br>
+                <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] ${
+                  o.paymentVerified ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-300"
+                }">
+                  ${o.paymentMethod || "COD"} ${o.paymentVerified ? "(PAID)" : "(PENDING)"}
+                </span>
+              </div>
             </div>
-            <div style="text-align:center;margin-top:6px;">Thank you!</div>
-          </div>
-        </body>
-        </html>
-      `;
-      const win = window.open('', '_blank', 'width=400,height=600');
-      if (!win) {
-        alert('Popup blocked. Allow popups for this site to print.');
-        return;
+            <div class="order-card-items text-gray-100 mb-2">
+              ${itemsText || "No items"}
+            </div>
+            <div class="flex flex-wrap gap-2 text-[11px]">
+              ${
+                o.location && o.location.lat && o.location.lng
+                  ? `<button
+                       class="px-2 py-1 rounded-full border border-amber-400 text-amber-200"
+                       onclick="openMapsForDelivery(${o.location.lat},${o.location.lng})">
+                       Deliver
+                     </button>`
+                  : `<button
+                       class="px-2 py-1 rounded-full border border-slate-700 text-slate-400"
+                       disabled>
+                       Deliver
+                     </button>`
+              }
+              <button data-action="status" data-status="incoming"
+                class="px-2 py-1 rounded-full border border-slate-600 text-gray-200">
+                Incoming
+              </button>
+              <button data-action="status" data-status="out_for_delivery"
+                class="px-2 py-1 rounded-full border border-slate-600 text-gray-200">
+                Out for delivery
+              </button>
+              <button data-action="status" data-status="delivered"
+                class="px-2 py-1 rounded-full border border-slate-600 text-gray-200">
+                Delivered
+              </button>
+              <button data-action="payment"
+                class="px-2 py-1 rounded-full border border-emerald-500 text-emerald-300">
+                Paid
+              </button>
+            </div>
+          `;
+
+          card.querySelectorAll("button[data-action='status']").forEach(btn=>{
+            btn.onclick = async () => {
+              const status = btn.getAttribute("data-status");
+              try{
+                await fetch(`/api/orders/${o._id}/status`,{
+                  method:"PATCH",
+                  headers:{ "Content-Type":"application/json" },
+                  body:JSON.stringify({ status })
+                });
+              }catch(e){ console.error(e); }
+            };
+          });
+
+          const paidBtn = card.querySelector("button[data-action='payment']");
+          paidBtn.onclick = async () => {
+            try{
+              await fetch(`/api/orders/${o._id}/payment-verified`,{
+                method:"PATCH",
+                headers:{ "Content-Type":"application/json" },
+                body:JSON.stringify({ paymentVerified: !o.paymentVerified })
+              });
+            }catch(e){ console.error(e); }
+          };
+
+          if(o.status === "delivered"){
+            historyList.appendChild(card);
+          }else{
+            ordersList.appendChild(card);
+          }
+        });
+      }catch(e){
+        console.error(e);
       }
-      win.document.open();
-      win.document.write(html);
-      win.document.close();
     }
 
-    const dashboardPeriod = document.getElementById('dashboardPeriod');
-    const dashboardDate = document.getElementById('dashboardDate');
-    dashboardDate.value = getLocalToday();
+    // DASHBOARD
+    const dashboardPeriod = document.getElementById("dashboardPeriod");
+    const dashboardDate   = document.getElementById("dashboardDate");
+    dashboardDate.value   = getLocalToday();
 
     async function renderDashboard() {
       let d = dashboardDate.value, period = dashboardPeriod.value;
-      let r = await fetch(`/api/dashboard/sales?period=${period}&date=${d}`); let stats = await r.json();
-      document.getElementById('sales-today').textContent = '₹' + (stats.total || 0);
-      document.getElementById('orders-month').textContent = stats.count || 0;
+      try{
+        let r = await fetch(`/api/dashboard/sales?period=${period}&date=${d}`);
+        let stats = await r.json();
+        document.getElementById('sales-today').textContent = '₹' + (stats.total || 0);
+        document.getElementById('orders-month').textContent = stats.count || 0;
 
-      r = await fetch(`/api/dashboard/peakhour?date=${d}`); let peak = await r.json();
-      document.getElementById('peak-hour').textContent = (peak && peak.hour !== "-") ? `${peak.hour}:00` : '-';
+        r = await fetch(`/api/dashboard/peakhour?date=${d}`); let peak = await r.json();
+        document.getElementById('peak-hour').textContent = (peak && peak.hour !== "-") ? `${peak.hour}:00` : '-';
 
-      r = await fetch(`/api/dashboard/topdish?date=${d}`); let dish = await r.json();
-      document.getElementById('top-dish').textContent = dish ? dish._id : '-';
+        r = await fetch(`/api/dashboard/topdish?date=${d}`); let dish = await r.json();
+        document.getElementById('top-dish') && (document.getElementById('top-dish').textContent = dish ? dish._id : '-');
+      }catch(e){
+        console.error(e);
+      }
     }
     dashboardPeriod.onchange = dashboardDate.onchange = renderDashboard;
 
+    // Insights
     const compareBy = document.getElementById('compareBy');
     const compareByLabel = document.getElementById('compareByLabel');
     const insightType = document.getElementById('insightType');
@@ -810,58 +729,64 @@
         by = compareBy.value || 'day';
       let html = '';
 
-      if(type === "compare_sales") {
-        let salesA, salesB, labelA, labelB;
-        if(by === "day") {
-          salesA = await fetch(`/api/dashboard/sales?period=day&date=${from}`).then(r=>r.json());
-          salesB = await fetch(`/api/dashboard/sales?period=day&date=${to}`).then(r=>r.json());
-          labelA = from || '—'; labelB = to || '—';
-        } else if(by === "week") {
-          salesA = await fetch(`/api/dashboard/sales?period=week&date=${from}`).then(r=>r.json());
-          salesB = await fetch(`/api/dashboard/sales?period=week&date=${to}`).then(r=>r.json());
-          labelA = `Week of ${from || '—'}`; labelB = `Week of ${to || '—'}`;
-        } else if(by === "month") {
-          salesA = await fetch(`/api/dashboard/sales?period=month&date=${from}`).then(r=>r.json());
-          salesB = await fetch(`/api/dashboard/sales?period=month&date=${to}`).then(r=>r.json());
-          labelA = `Month: ${(from || '—').slice(0,7)}`; labelB = `Month: ${(to || '—').slice(0,7)}`;
+      try{
+        if(type === "compare_sales") {
+          let salesA, salesB, labelA, labelB;
+          if(by === "day") {
+            salesA = await fetch(`/api/dashboard/sales?period=day&date=${from}`).then(r=>r.json());
+            salesB = await fetch(`/api/dashboard/sales?period=day&date=${to}`).then(r=>r.json());
+            labelA = from || '—'; labelB = to || '—';
+          } else if(by === "week") {
+            salesA = await fetch(`/api/dashboard/sales?period=week&date=${from}`).then(r=>r.json());
+            salesB = await fetch(`/api/dashboard/sales?period=week&date=${to}`).then(r=>r.json());
+            labelA = `Week of ${from || '—'}`; labelB = `Week of ${to || '—'}`;
+          } else if(by === "month") {
+            salesA = await fetch(`/api/dashboard/sales?period=month&date=${from}`).then(r=>r.json());
+            salesB = await fetch(`/api/dashboard/sales?period=month&date=${to}`).then(r=>r.json());
+            labelA = `Month: ${(from || '—').slice(0,7)}`; labelB = `Month: ${(to || '—').slice(0,7)}`;
+          }
+          html = `
+            <div class="mb-4 flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-6">
+              <div class="flex-1 bg-yellow-200 rounded-xl p-3 md:p-4 shadow insight-big-value text-center">
+                ${labelA}<br>₹${salesA.total||0}<br>
+                <span class="insight-mid-value">Orders: ${salesA.count||0}</span>
+              </div>
+              <div class="flex-1 bg-yellow-200 rounded-xl p-3 md:p-4 shadow insight-big-value text-center">
+                ${labelB}<br>₹${salesB.total||0}<br>
+                <span class="insight-mid-value">Orders: ${salesB.count||0}</span>
+              </div>
+            </div>`;
+          document.getElementById('insightResult').innerHTML = html;
+          return;
         }
-        html = `
-          <div class="mb-4 flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-6">
-            <div class="flex-1 bg-yellow-200 rounded-xl p-3 md:p-4 shadow insight-big-value text-center">
-              ${labelA}<br>₹${salesA.total||0}<br>
-              <span class="insight-mid-value">Orders: ${salesA.count||0}</span>
-            </div>
-            <div class="flex-1 bg-yellow-200 rounded-xl p-3 md:p-4 shadow insight-big-value text-center">
-              ${labelB}<br>₹${salesB.total||0}<br>
-              <span class="insight-mid-value">Orders: ${salesB.count||0}</span>
-            </div>
-          </div>`;
-        document.getElementById('insightResult').innerHTML = html;
-        return;
-      }
 
-      if(type === "repeat_customers") {
-        const data = await fetch(`/api/dashboard/repeatcustomers?from=${from}&to=${to}`).then(r=>r.json());
-        html = `<div class="table-wrapper"><table class="insight-result-table"><thead><tr><th>Name</th><th>Orders</th></tr></thead><tbody>`+
-          data.map(c=>`<tr><td>${c._id}</td><td>${c.orders}</td></tr>`).join('')+`</tbody></table></div>`;
-      } else if(type === "best_dish") {
-        const dish = await fetch(`/api/dashboard/topdish?from=${from}&to=${to}`).then(r=>r.json());
-        html = dish
-          ? `<div class="text-xl md:text-2xl font-bold text-yellow-800 mb-1">${dish._id}</div><div class="text-sm md:text-lg">Total Orders: <b>${dish.count}</b></div>`
-          : '<div class="text-sm text-red-700">No data found in this time frame</div>';
-      } else if(type === "customer_search" && name) {
-        const data = await fetch(`/api/dashboard/repeatcustomers?from=${from}&to=${to}&name=${encodeURIComponent(name)}`).then(r=>r.json());
-        html = data && data.length
-          ? `<div class="text-lg md:text-2xl text-yellow-900 font-bold mb-1">${name} visited <span class="font-extrabold text-yellow-900">${data[0].orders}</span> times</div>`
-          : `<div class="text-sm text-red-700">${name} did not visit in this period.</div>`;
-      } else {
-        html = '<div class="text-sm text-red-700">Choose an insight and date(s).</div>';
+        if(type === "repeat_customers") {
+          const data = await fetch(`/api/dashboard/repeatcustomers?from=${from}&to=${to}`).then(r=>r.json());
+          html = `<div class="table-wrapper"><table class="insight-result-table"><thead><tr><th>Name</th><th>Orders</th></tr></thead><tbody>`+
+            data.map(c=>`<tr><td>${c._id}</td><td>${c.orders}</td></tr>`).join('')+`</tbody></table></div>`;
+        } else if(type === "best_dish") {
+          const dish = await fetch(`/api/dashboard/topdish?from=${from}&to=${to}`).then(r=>r.json());
+          html = dish
+            ? `<div class="text-xl md:text-2xl font-bold text-yellow-800 mb-1">${dish._id}</div><div class="text-sm md:text-lg">Total Orders: <b>${dish.count}</b></div>`
+            : '<div class="text-sm text-red-700">No data found in this time frame</div>';
+        } else if(type === "customer_search" && name) {
+          const data = await fetch(`/api/dashboard/repeatcustomers?from=${from}&to=${to}&name=${encodeURIComponent(name)}`).then(r=>r.json());
+          html = data && data.length
+            ? `<div class="text-lg md:text-2xl text-yellow-900 font-bold mb-1">${name} visited <span class="font-extrabold text-yellow-900">${data[0].orders}</span> times</div>`
+            : `<div class="text-sm text-red-700">${name} did not visit in this period.</div>`;
+        } else {
+          html = '<div class="text-sm text-red-700">Choose an insight and date(s).</div>';
+        }
+      }catch(e){
+        console.error(e);
+        html = '<div class="text-sm text-red-700">Error loading insight data.</div>';
       }
       document.getElementById('insightResult').innerHTML = html;
     }
+    window.runInsight = runInsight;
 
+    // Date change: reload orders & dashboard
     datePicker.onchange = () => {
-      selectedDateText.textContent = datePicker.value;
       fetchOrders(datePicker.value);
       renderDashboard();
     };
@@ -879,102 +804,67 @@
     let menuData = null;
 
     async function loadInventory() {
-      const res = await fetch('/menu.json?_=' + Date.now());
-      menuData = await res.json();
-      const tbody = document.getElementById('inventoryTableBody');
-      let rows = '';
-
-      Object.entries(menuData).forEach(([cat, items]) => {
-        items.forEach((it, idx) => {
-          const inStock = it.available !== false;
-          rows += `
-            <tr>
-              <td class="px-3 py-2 text-left text-gray-200">${cat}</td>
-              <td class="px-3 py-2 text-left text-gray-100">${it.name}</td>
-              <td class="px-3 py-2 text-center">
-                <label class="switch">
-                  <input type="checkbox" data-cat="${cat}" data-idx="${idx}" ${inStock ? 'checked' : ''}>
-                  <span class="slider"></span>
-                </label>
-              </td>
-            </tr>`;
+      try{
+        const res = await fetch('/menu.json?_=' + Date.now());
+        menuData = await res.json();
+        const tbody = document.getElementById('inventoryTableBody');
+        let rows = '';
+        Object.entries(menuData).forEach(([cat, items]) => {
+          items.forEach((item, idx) => {
+            const rowSpan = idx === 0 ? `rowspan="${items.length}"` : '';
+            rows += `
+              <tr class="border-b border-slate-700">
+                ${idx === 0 ? `<td ${rowSpan} class="py-2 pr-2 align-top text-amber-200 text-xs md:text-sm font-semibold">${cat}</td>` : ''}
+                <td class="py-2 pr-2 text-xs md:text-sm text-gray-100">${item.name}</td>
+                <td class="py-2 pr-2 text-[11px] md:text-xs text-gray-300">
+                  ${Object.entries(item.variants || {}).map(([v,p]) => `${v}: ₹${p}`).join('<br>')}
+                </td>
+                <td class="py-2 text-center">
+                  <label class="switch">
+                    <input type="checkbox" ${item.available !== false ? 'checked' : ''} data-cat="${cat}" data-name="${item.name}">
+                    <span class="slider"></span>
+                  </label>
+                </td>
+              </tr>
+            `;
+          });
         });
+        tbody.innerHTML = rows;
+      }catch(e){
+        console.error(e);
+      }
+    }
+
+    const saveInventoryBtn = document.getElementById('saveInventoryBtn');
+    const inventoryStatus = document.getElementById('inventoryStatus');
+
+    saveInventoryBtn.onclick = async () => {
+      if(!menuData) return;
+      const switches = document.querySelectorAll('#inventoryTableBody input[type="checkbox"]');
+      switches.forEach(sw => {
+        const cat = sw.getAttribute('data-cat');
+        const name = sw.getAttribute('data-name');
+        const items = menuData[cat] || [];
+        const item = items.find(i => i.name === name);
+        if(item) item.available = sw.checked;
       });
-
-      tbody.innerHTML = rows;
-    }
-
-    function applyInventoryChanges() {
-      if (!menuData) return;
-      document.querySelectorAll('#inventoryTableBody input[type=checkbox]').forEach(cb => {
-        const cat = cb.dataset.cat;
-        const idx = Number(cb.dataset.idx);
-        menuData[cat][idx].available = cb.checked;
-      });
-    }
-
-    async function saveInventory() {
-      if (!menuData) return;
-      applyInventoryChanges();
-      try {
-        await fetch('/update-menu', {
-          method: 'POST',
-          headers: { 'Content-Type':'application/json' },
-          body: JSON.stringify(menuData)
+      try{
+        await fetch('/update-menu',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(menuData)
         });
-        alert('Inventory updated');
-      } catch (e) {
-        alert('Failed to save inventory');
+        inventoryStatus.textContent = "Menu updated successfully.";
+        inventoryStatus.classList.remove('hidden');
+        inventoryStatus.classList.remove('text-red-400');
+        setTimeout(()=>inventoryStatus.classList.add('hidden'),1500);
+      }catch(e){
+        console.error(e);
+        inventoryStatus.textContent = "Error saving menu.";
+        inventoryStatus.classList.remove('hidden');
+        inventoryStatus.classList.add('text-red-400');
       }
-    }
-
-    document.getElementById('saveInventoryBtn').onclick = saveInventory;
-
-    // ---------- RESTAURANT ON/OFF using inventory + /update-menu ----------
-    const restStatusLabel  = document.getElementById("restStatusLabel");
-    const restStatusToggle = document.getElementById("restStatusToggle");
-
-    async function setAllItemsAvailability(open) {
-      if (!menuData) {
-        await loadInventory();
-      }
-      Object.keys(menuData).forEach(cat => {
-        menuData[cat].forEach(item => {
-          item.available = open;
-        });
-      });
-
-      try {
-        await fetch('/update-menu', {
-          method: 'POST',
-          headers: { 'Content-Type':'application/json' },
-          body: JSON.stringify(menuData)
-        });
-        await loadInventory();
-      } catch (e) {
-        alert('Failed to toggle restaurant');
-        throw e;
-      }
-    }
-
-    restStatusToggle.addEventListener('change', async () => {
-      const newOpen = restStatusToggle.checked;
-      restStatusLabel.textContent = newOpen ? 'Restaurant: ON' : 'Restaurant: OFF';
-
-      try {
-        await setAllItemsAvailability(newOpen);
-      } catch (e) {
-        restStatusToggle.checked = !newOpen;
-        restStatusLabel.textContent = !newOpen ? 'Restaurant: ON' : 'Restaurant: OFF';
-      }
-    });
-
-    // ---------- INIT ----------
-    window.addEventListener('DOMContentLoaded', () => {
-      setTab('orders');
-      fetchOrders(datePicker.value);
-      renderDashboard();
-    });
+    };
   </script>
 </body>
 </html>
