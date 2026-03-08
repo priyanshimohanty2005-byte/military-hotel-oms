@@ -972,12 +972,323 @@ function buildReceipt(order){
       }
     });
 
-    // ---------- INIT ----------
-    window.addEventListener('DOMContentLoaded', () => {
-      setTab('orders');
-      fetchOrders(datePicker.value);
-      renderDashboard();
+  <script>
+  // ===== LOGIN + APP VISIBILITY =====
+  const loginOverlay   = document.getElementById("loginOverlay");
+  const managerApp     = document.getElementById("managerApp");
+  const loginUserEl    = document.getElementById("loginUser");
+  const loginPassEl    = document.getElementById("loginPass");
+  const loginBtn       = document.getElementById("loginBtn");
+  const loginErrorEl   = document.getElementById("loginError");
+
+  const LOGIN_KEY = "mh_manager_logged_in";
+
+  function showApp() {
+    loginOverlay.style.display = "none";
+    managerApp.style.display = "block";
+  }
+
+  function showLogin() {
+    loginOverlay.style.display = "flex";
+    managerApp.style.display = "none";
+  }
+
+  // On first load: auto‑show app if already logged in
+  if (localStorage.getItem(LOGIN_KEY) === "1") {
+    showApp();
+  } else {
+    showLogin();
+  }
+
+  loginBtn.onclick = async () => {
+    const username = loginUserEl.value.trim();
+    const password = loginPassEl.value.trim();
+    if (!username || !password) {
+      loginErrorEl.textContent = "Enter both username and password.";
+      loginErrorEl.classList.remove("hidden");
+      return;
+    }
+    try {
+      const res = await fetch("/api/manager/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        loginErrorEl.textContent = data.message || "Wrong username or password.";
+        loginErrorEl.classList.remove("hidden");
+        return;
+      }
+      // success
+      localStorage.setItem(LOGIN_KEY, "1");
+      loginErrorEl.classList.add("hidden");
+      showApp();
+    } catch (e) {
+      loginErrorEl.textContent = "Server error. Try again.";
+      loginErrorEl.classList.remove("hidden");
+    }
+  };
+
+  // ===== RESTAURANT ON/OFF TOGGLE (PERSIST) =====
+  const restStatusToggle = document.getElementById("restStatusToggle");
+  const restStatusLabel  = document.getElementById("restStatusLabel");
+  const REST_KEY = "mh_rest_open";
+
+  // Restore saved state
+  const savedRest = localStorage.getItem(REST_KEY);
+  if (savedRest === "0") {
+    restStatusToggle.checked = false;
+    restStatusLabel.textContent = "Restaurant: OFF";
+  } else {
+    restStatusToggle.checked = true;
+    restStatusLabel.textContent = "Restaurant: ON";
+  }
+
+  restStatusToggle.addEventListener("change", async () => {
+    const isOpen = restStatusToggle.checked;
+    restStatusLabel.textContent = "Restaurant: " + (isOpen ? "ON" : "OFF");
+    localStorage.setItem(REST_KEY, isOpen ? "1" : "0");
+    try {
+      await fetch("/api/settings/restaurant-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ open: isOpen })
+      });
+    } catch (e) {
+      alert("Could not update restaurant status on server.");
+    }
+  });
+
+  // ===== CHANGE LOGIN MODAL (unchanged except logout flag) =====
+  const changeLoginModal     = document.getElementById("changeLoginModal");
+  const openChangeLoginBtn   = document.getElementById("openChangeLogin");
+  const cancelChangeLoginBtn = document.getElementById("cancelChangeLogin");
+  const saveChangeLoginBtn   = document.getElementById("saveChangeLogin");
+  const curUserEl            = document.getElementById("curUser");
+  const curPassEl            = document.getElementById("curPass");
+  const newUserEl            = document.getElementById("newUser");
+  const newPassEl            = document.getElementById("newPass");
+  const changeLoginError     = document.getElementById("changeLoginError");
+
+  openChangeLoginBtn.onclick = () => {
+    curUserEl.value = "";
+    curPassEl.value = "";
+    newUserEl.value = "";
+    newPassEl.value = "";
+    changeLoginError.classList.add("hidden");
+    changeLoginModal.classList.remove("hidden");
+    changeLoginModal.classList.add("flex");
+  };
+
+  cancelChangeLoginBtn.onclick = () => {
+    changeLoginModal.classList.add("hidden");
+    changeLoginModal.classList.remove("flex");
+  };
+
+  saveChangeLoginBtn.onclick = async () => {
+    const currentUser     = curUserEl.value.trim();
+    const currentPassword = curPassEl.value.trim();
+    const newUser         = newUserEl.value.trim();
+    const newPassword     = newPassEl.value.trim();
+
+    if (!currentUser || !currentPassword || !newUser || !newPassword) {
+      changeLoginError.textContent = "Fill all fields.";
+      changeLoginError.classList.remove("hidden");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/manager/change-credentials", {
+        method: "POST",
+        headers: { "Content-Type":"application/json" },
+        body: JSON.stringify({ currentUser, currentPassword, newUser, newPassword })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        changeLoginError.textContent = data.message || "Could not update. Check current login.";
+        changeLoginError.classList.remove("hidden");
+        return;
+      }
+      alert("Login updated. Please login again with new ID and password.");
+      changeLoginModal.classList.add("hidden");
+      changeLoginModal.classList.remove("flex");
+
+      // force logout
+      localStorage.removeItem(LOGIN_KEY);
+      showLogin();
+      loginUserEl.value = "";
+      loginPassEl.value = "";
+    } catch (e) {
+      changeLoginError.textContent = "Server error. Try again.";
+      changeLoginError.classList.remove("hidden");
+    }
+  };
+
+  // ===== ORIGINAL MANAGER LOGIC (unchanged below) =====
+  const socket = io();
+
+  function getLocalToday() {
+    const d = new Date();
+    const tzOffset = d.getTimezoneOffset() * 60000;
+    return new Date(d.getTime() - tzOffset).toISOString().slice(0,10);
+  }
+
+  const datePicker = document.getElementById('datePicker');
+  const selectedDateText = document.getElementById('selectedDateText');
+
+  datePicker.value = getLocalToday();
+  selectedDateText.textContent = datePicker.value;
+
+  const tabOrders = document.getElementById('tabOrders');
+  const tabAnalytics = document.getElementById('tabAnalytics');
+  const tabInventory = document.getElementById('tabInventory');
+  const ordersSection = document.getElementById('ordersSection');
+  const analyticsSection = document.getElementById('analyticsSection');
+  const inventorySection = document.getElementById('inventorySection');
+
+  function setTab(active) {
+    ordersSection.classList.add('hidden');
+    analyticsSection.classList.add('hidden');
+    inventorySection.classList.add('hidden');
+    tabOrders.classList.remove('tab-btn-active');
+    tabAnalytics.classList.remove('tab-btn-active');
+    tabInventory.classList.remove('tab-btn-active');
+
+    if (active === 'orders') {
+      ordersSection.classList.remove('hidden');
+      tabOrders.classList.add('tab-btn-active');
+    } else if (active === 'analytics') {
+      analyticsSection.classList.remove('hidden');
+      tabAnalytics.classList.add('tab-btn-active');
+    } else {
+      inventorySection.classList.remove('hidden');
+      tabInventory.classList.add('tab-btn-active');
+    }
+  }
+
+  tabOrders.onclick = () => setTab('orders');
+  tabAnalytics.onclick = () => setTab('analytics');
+  tabInventory.onclick = () => setTab('inventory');
+
+  async function fetchOrders(date) {
+    const res = await fetch('/api/orders?date=' + date);
+    const orders = await res.json();
+    render(orders);
+  }
+
+  function render(orders) {
+    const dinein   = orders.filter(o => o.orderType === 'dinein');
+    const takeaway = orders.filter(o => o.orderType === 'takeaway');
+    const delivery = orders.filter(o => o.orderType === 'delivery');
+
+    document.getElementById('totalOrders').innerText   = orders.length;
+    document.getElementById('totalRevenue').innerText  = orders.reduce((s,o)=>s+o.total,0);
+    document.getElementById('countDinein').innerText   = dinein.length;
+    document.getElementById('countTakeaway').innerText = takeaway.length;
+    document.getElementById('countDelivery').innerText = delivery.length;
+
+    const incoming = orders.filter(o =>
+      (o.status || '').trim().toLowerCase() !== 'delivered' &&
+      (o.status || '').trim().toLowerCase() !== 'deleted'
+    );
+    const delivered = orders.filter(o =>
+      (o.status || '').trim().toLowerCase() === 'delivered'
+    );
+
+    document.getElementById('incoming').innerHTML = incoming.length
+      ? incoming.map(o => cardHtml(o, true)).join('')
+      : '<div class="text-yellow-300 font-semibold text-sm md:text-lg py-6 text-center">No upcoming/incoming orders for selected date.</div>';
+
+    document.getElementById('delivered').innerHTML = delivered.length
+      ? delivered.map(o => cardHtml(o, false)).join('')
+      : '<div class="text-green-200 font-semibold text-sm md:text-lg py-6 text-center">No delivered orders yet.</div>';
+  }
+
+  function cardHtml(o, isIncoming) {
+    return `
+      <div class="bg-${isIncoming ? 'gray-900 border border-amber-400' : 'gray-800 border border-gray-700'} rounded-xl p-3 md:p-4 shadow-sm">
+        <div class="flex justify-between items-start gap-2">
+          <div class="w-2/3">
+            <div class="flex items-center flex-wrap gap-1 mb-1">
+              <span class="order-type-badge order-type-${o.orderType}">${o.orderType.charAt(0).toUpperCase() + o.orderType.slice(1)}</span>
+              <span class="order-card-title">${o.customerName || '-'}</span>
+            </div>
+            <div class="order-card-meta text-gray-400">${new Date(o.createdAt).toLocaleString()}</div>
+            <div class="order-card-meta text-gray-400 mt-0.5">${renderOrderDetails(o)}</div>
+          </div>
+          <div class="text-right w-1/3">
+            <div class="font-semibold text-sm ${isIncoming ? 'text-amber-200' : 'text-green-300'}">₹${o.total}</div>
+            <div class="order-card-meta text-gray-400 mt-1">${o.mobile ? "📱 " + o.mobile : ""}</div>
+          </div>
+        </div>
+        <ul class="mt-2 order-card-items ${isIncoming ? 'text-gray-200' : 'text-gray-300'} leading-snug">
+          ${o.items.map(it=>`<li>• ${it.qty} × ${formatDisplayName(it)} — ₹${it.price}</li>`).join('')}
+        </ul>
+        <div class="mt-3 flex flex-wrap gap-2">
+          ${isIncoming ? `
+            <button class="card-btn px-3 py-1 text-xs bg-blue-600 rounded-full" onclick="updateStatus('${o._id}','preparing')">Preparing</button>
+            <button class="card-btn px-3 py-1 text-xs bg-green-600 rounded-full" onclick="updateStatus('${o._id}','delivered')">Delivered</button>
+            <button class="card-btn px-3 py-1 text-xs bg-red-600 rounded-full" onclick="deleteOrder('${o._id}')">Delete</button>
+          ` : ``}
+          <button class="card-btn px-3 py-1 text-xs bg-teal-400 text-black rounded-full font-bold" onclick='bluetoothPrint(${JSON.stringify(o)})'>Bluetooth Print</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderOrderDetails(o) {
+    if (o.orderType === 'dinein') return `Table: ${o.tableNumber || '—'}`;
+    else if (o.orderType === 'takeaway' || o.orderType === 'delivery') return `Address: ${o.address || '—'}`;
+    return '';
+  }
+
+  function formatDisplayName(it) {
+    const variant = it.variant || it.size || it.option || '';
+    const v = variant ? ` (${variant})` : '';
+    return `${it.name}${v}`;
+  }
+
+  async function updateStatus(id, status) {
+    await fetch('/api/orders/' + id + '/status', {
+      method: 'PATCH',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ status })
     });
-  </script>
+  }
+
+  async function deleteOrder(id) {
+    if (!confirm('Delete this order?')) return;
+    await fetch('/api/orders/' + id + '/status', {
+      method: 'PATCH',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ status: 'deleted' })
+    });
+  }
+
+  // BLUETOOTH PRINT + DASHBOARD + INVENTORY CODE
+  // (keep your existing functions here unchanged)
+
+  datePicker.onchange = () => {
+    selectedDateText.textContent = datePicker.value;
+    fetchOrders(datePicker.value);
+  };
+
+  socket.on('newOrder', (o) => {
+    if ((o.createdAt || '').slice(0,10) === datePicker.value) {
+      fetchOrders(datePicker.value);
+    }
+  });
+  socket.on('orderUpdated', (o) => {
+    fetchOrders(datePicker.value);
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    setTab('orders');
+    fetchOrders(datePicker.value);
+    renderDashboard && renderDashboard();
+    loadInventory && loadInventory();
+  });
+</script>
 </body>
 </html>
