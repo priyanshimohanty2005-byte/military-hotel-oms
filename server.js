@@ -109,6 +109,47 @@ app.get('/menu.json', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/menu.json'));
 });
 
+// NEW: get single menu item by name (for live availability check)
+app.get('/api/menu/item', (req, res) => {
+  const name = req.query.name;
+  if (!name) {
+    return res.status(400).json({ error: 'name query required' });
+  }
+
+  const filePath = path.join(__dirname, 'public', 'menu.json');
+
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading menu.json:', err);
+      return res.status(500).json({ error: 'Failed to read menu' });
+    }
+
+    try {
+      const menu = JSON.parse(data); // { "Starters":[...], "Rice":[...], ... }
+      let found = null;
+
+      Object.values(menu).forEach(list => {
+        if (found) return;
+        const item = (list || []).find(it => it.name === name);
+        if (item) found = item;
+      });
+
+      if (!found) {
+        return res.status(404).json({ error: 'Item not found' });
+      }
+
+      res.json({
+        name: found.name,
+        variants: found.variants,
+        available: found.available !== false
+      });
+    } catch (e) {
+      console.error('Error parsing menu.json:', e);
+      res.status(500).json({ error: 'Invalid menu format' });
+    }
+  });
+});
+
 // Inventory: update menu.json
 app.post('/update-menu', (req, res) => {
   try {
@@ -426,9 +467,9 @@ app.get('/api/next-print-ticket', (req, res) => {
   });
   lines.push('--------------------------');
   lines.push(`Total: ₹${order.total}`);
-  lines.push('\\n\\n\\n');
+  lines.push('\\\\n\\\\n\\\\n');
 
-  res.type('text/plain').send(lines.join('\\n'));
+  res.type('text/plain').send(lines.join('\\\\n'));
 });
 
 // ---------------- SOCKET.IO ----------------
