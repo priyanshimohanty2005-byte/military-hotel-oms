@@ -349,6 +349,13 @@ const addressInput=document.getElementById("address");
 const orderType=document.getElementById("orderType");
 
 let cart=[],page=0,locked=false,menu={};
+  // fetch single item latest availability before adding
+async function fetchItem(name) {
+  const res = await fetch("/api/menu/item?name=" + encodeURIComponent(name), { cache: "no-store" });
+  if (!res.ok) return null;
+  return await res.json();   // should return { name, variants, available, ... }
+}
+
 
 /* NAV */
 function go(i){
@@ -553,20 +560,35 @@ function build(){
 }
 
 /* CART LOGIC */
-function add(name,btn){
-  const sel=btn.previousElementSibling;
-  if(!sel.value){alert("Please choose an option");return;}
-  const price=+sel.value;
-  const variant=sel.options[sel.selectedIndex].text.split(" — ")[0];
+async function add(name, btn){
+  const sel = btn.previousElementSibling;
+  if (!sel.value) {
+    alert("Please choose an option");
+    return;
+  }
 
-  let f=cart.find(i=>i.name===name&&i.price===price&&i.variant===variant);
-  if(f)f.qty++;
-  else cart.push({name,variant,price,qty:1});
+  // 1) check latest status from server
+  const latest = await fetchItem(name);
+  if (!latest || latest.available === false) {
+    alert("This item is currently unavailable. Please choose something else.");
+    // optionally disable this card in UI
+    btn.disabled = true;
+    btn.textContent = "Sold out";
+    sel.disabled = true;
+    sel.style.opacity = 0.5;
+    return;
+  }
+
+  const price   = +sel.value;
+  const variant = sel.options[sel.selectedIndex].text.split(" — ")[0];
+
+  let f = cart.find(i => i.name === name && i.price === price && i.variant === variant);
+  if (f) f.qty++;
+  else cart.push({ name, variant, price, qty: 1 });
 
   toast(`${name} (${variant}) added`);
   updateCart();
 }
-
 function updateCart(){
   cartItemsDiv.innerHTML="";
   let total=0;
